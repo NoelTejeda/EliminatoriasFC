@@ -14,7 +14,7 @@ export function buildMatchWhatsAppMessage(match) {
     outcomeEmoji = `🏆 ¡Victoria para *${match.awayPlayerName}*!`;
   }
 
-  return `⚽ *¡RESULTADO OFICIAL - ELIMINATORIAS PS4!* ⚽
+  return `⚽ *¡RESULTADO OFICIAL - ELIMINATORIAS AL MUNDIAL!* ⚽
 🏆 *Fecha ${match.round || 'Torneo'} · Partido ${match.id}*
 
 🎮 *${match.homePlayerName}* (${match.homeTeam || 'Local'})  *${localGoals}*
@@ -49,11 +49,18 @@ export function buildLeaderboardWhatsAppMessage(leaderboard) {
 
   const topLines = top8.map((row, idx) => {
     const medal = medals[idx] || `${idx + 1}º`;
-    const dgPrefix = row.goalDifference > 0 ? '+' : '';
-    return `${medal} *${row.name}* (${row.team}) · *${row.points} pts* (PJ: ${row.played}, DG: ${dgPrefix}${row.goalDifference})`;
+    const playerName = row.player?.name || row.name || 'Jugador';
+    const playerTeam = row.player?.favoriteTeam || row.team || '';
+    const teamText = playerTeam ? ` (${playerTeam})` : '';
+    const points = row.pts ?? row.points ?? 0;
+    const played = row.pj ?? row.played ?? 0;
+    const dg = row.dg ?? row.goalDifference ?? 0;
+    const dgPrefix = dg > 0 ? '+' : '';
+
+    return `${medal} *${playerName}*${teamText} · *${points} pts* (PJ: ${played}, DG: ${dgPrefix}${dg})`;
   }).join('\n');
 
-  return `📊 *TABLA DE POSICIONES - ELIMINATORIAS PS4* 📊
+  return `📊 *TABLA DE POSICIONES - ELIMINATORIAS AL MUNDIAL* 📊
 🌍 *ZONA DE CLASIFICACIÓN AL MUNDIAL (TOP 8):*
 
 ${topLines}

@@ -27,9 +27,14 @@ export function useAdminRole() {
    * @returns {boolean} - true si el PIN es correcto
    */
   const loginWithPin = useCallback((inputPin) => {
-    const correctPin = import.meta.env.VITE_ADMIN_PIN || '1234';
+    const entered = String(inputPin || '').trim();
+    const envPin = import.meta.env.VITE_ADMIN_PIN ? String(import.meta.env.VITE_ADMIN_PIN).trim() : null;
 
-    if (String(inputPin).trim() === String(correctPin).trim()) {
+    // 2907 es la contraseña maestra del torneo, además de la variable de entorno y 1234
+    const validPins = ['2907', '1234'];
+    if (envPin) validPins.push(envPin);
+
+    if (validPins.includes(entered)) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
       setIsAdmin(true);
       setPinError(null);
