@@ -14,6 +14,8 @@ import {
   ArrowRight,
   Shield,
 } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
+import { shareMatchToWhatsApp } from '../utils/whatsappShare';
 
 export function FixtureViewer({
   matches,
@@ -385,6 +387,13 @@ export function FixtureViewer({
                             FINALIZADO
                           </span>
                           <button
+                            onClick={() => shareMatchToWhatsApp(m)}
+                            title="Compartir resultado en WhatsApp"
+                            className="p-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-[#25D366] border border-emerald-500/30 transition"
+                          >
+                            <WhatsAppIcon className="w-3.5 h-3.5" />
+                          </button>
+                          <button
                             onClick={() => onResetMatch(m.id)}
                             title="Reabrir partido para corregir marcador"
                             className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 transition"
@@ -524,8 +533,17 @@ export function FixtureViewer({
 
                     <div className="text-right">
                       {m.jugado ? (
-                        <div className="text-base font-black font-gaming text-white px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">
-                          {isHome ? `${m.golesLocal} - ${m.golesVisitante}` : `${m.golesVisitante} - ${m.golesLocal}`}
+                        <div className="flex items-center gap-1.5 justify-end">
+                          <div className="text-base font-black font-gaming text-white px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700">
+                            {isHome ? `${m.golesLocal} - ${m.golesVisitante}` : `${m.golesVisitante} - ${m.golesLocal}`}
+                          </div>
+                          <button
+                            onClick={() => shareMatchToWhatsApp(m)}
+                            title="Compartir resultado en WhatsApp"
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-[#25D366] border border-slate-700 hover:border-emerald-500/30 transition"
+                          >
+                            <WhatsAppIcon className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       ) : (
                         <div className="flex flex-col items-end gap-1">

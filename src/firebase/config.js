@@ -10,7 +10,7 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -24,20 +24,8 @@ const firebaseConfig = {
 // Inicializar Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Firestore
+// Inicializar Firestore (conexión directa limpia sin colas de IndexedDB zombi)
 export const db = getFirestore(app);
-
-// Habilitar persistencia offline (IndexedDB) — fallback si no hay conexión
-// Permite que la app funcione aunque los amigos pierdan señal momentáneamente
-enableIndexedDbPersistence(db).catch((err) => {
-  if (err.code === 'failed-precondition') {
-    // La persistencia offline solo funciona en una pestaña a la vez
-    console.warn('[Firebase] Persistencia offline no disponible: múltiples pestañas abiertas.');
-  } else if (err.code === 'unimplemented') {
-    // El navegador no soporta la API requerida
-    console.warn('[Firebase] Este navegador no soporta persistencia offline.');
-  }
-});
 
 /**
  * Referencia al documento centralizado del torneo.

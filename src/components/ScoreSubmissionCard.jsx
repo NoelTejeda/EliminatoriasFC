@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Gamepad2, Save, Shuffle, AlertCircle, CheckCircle, Shield } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
+import { shareMatchToWhatsApp } from '../utils/whatsappShare';
 
 export function ScoreSubmissionCard({
   activeMatch,
@@ -20,17 +22,42 @@ export function ScoreSubmissionCard({
     }
   }, [activeMatch]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const saveResult = async (shouldShareWhatsApp = false) => {
     if (!activeMatch) return;
 
     setIsSubmitting(true);
-    const success = onSubmitResult(activeMatch.id, localGoals, awayGoals);
+    const parsedLocal = parseInt(localGoals, 10) || 0;
+    const parsedAway = parseInt(awayGoals, 10) || 0;
+
+    const success = await onSubmitResult(activeMatch.id, localGoals, awayGoals);
     setIsSubmitting(false);
 
-    if (success) {
-      // Los goles se limpian o actualizan en el useEffect con el siguiente partido
+    if (success && shouldShareWhatsApp) {
+      shareMatchToWhatsApp({
+        ...activeMatch,
+        golesLocal: parsedLocal,
+        golesVisitante: parsedAway,
+      });
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    saveResult(false);
+  };
+
+  const handleSaveAndShare = (e) => {
+    e.preventDefault();
+    saveResult(true);
+  };
+
+  const handleDirectShare = () => {
+    if (!activeMatch) return;
+    shareMatchToWhatsApp({
+      ...activeMatch,
+      golesLocal: parseInt(localGoals, 10) || 0,
+      golesVisitante: parseInt(awayGoals, 10) || 0,
+    });
   };
 
   const handleRandomSelect = () => {
@@ -229,21 +256,45 @@ export function ScoreSubmissionCard({
 
         </div>
 
-        {/* Botón de Guardar Resultado */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
+        {/* Botones de Guardar Resultado y WhatsApp */}
+        <div className="mt-4 pt-3 border-t border-slate-800/80 flex flex-col lg:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-400 flex items-center gap-1.5">
-            <CheckCircle className="w-4 h-4 text-fifa-neon" />
-            <span>Al guardar, el partido sale de la cola de pendientes y se actualiza la tabla al instante.</span>
+            <CheckCircle className="w-4 h-4 text-fifa-neon shrink-0" />
+            <span>Al guardar, el partido sale de pendientes y se actualiza la tabla en vivo.</span>
           </div>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-fifa-emerald via-fifa-neon to-fifa-emerald text-slate-950 font-black text-sm font-gaming tracking-wider uppercase shadow-neon-glow hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            <span>GUARDAR RESULTADO OFICIAL</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-end">
+            {activeMatch.jugado && (
+              <button
+                type="button"
+                onClick={handleDirectShare}
+                title="Compartir resultado actual por WhatsApp"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 font-bold text-xs font-gaming tracking-wide uppercase transition-all flex items-center justify-center gap-2"
+              >
+                <WhatsAppIcon className="w-4 h-4 text-[#25D366]" />
+                <span>Re-enviar por WhatsApp</span>
+              </button>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs font-gaming tracking-wider uppercase transition-all flex items-center justify-center gap-2"
+            >
+              <Save className="w-3.5 h-3.5 text-fifa-neon" />
+              <span>Guardar Solo</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSaveAndShare}
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-[#25D366] to-emerald-600 text-slate-950 font-black text-xs font-gaming tracking-wider uppercase shadow-lg shadow-emerald-500/20 hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+              <WhatsAppIcon className="w-4 h-4 text-slate-950" />
+              <span>Guardar y Compartir en WhatsApp</span>
+            </button>
+          </div>
         </div>
       </form>
     </div>

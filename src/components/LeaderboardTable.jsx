@@ -1,5 +1,7 @@
 import React from 'react';
 import { Trophy, ShieldAlert, Award, Sparkles, Check, HelpCircle } from 'lucide-react';
+import { WhatsAppIcon } from './WhatsAppIcon';
+import { shareLeaderboardToWhatsApp } from '../utils/whatsappShare';
 
 export function LeaderboardTable({ leaderboard, presentPlayerIds, onSelectPlayerFilter }) {
   const presentSet = new Set(presentPlayerIds);
@@ -25,15 +27,24 @@ export function LeaderboardTable({ leaderboard, presentPlayerIds, onSelectPlayer
           </p>
         </div>
 
-        {/* Leyenda de Zonas */}
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-fifa-emerald/10 border border-fifa-emerald/30 text-fifa-neon font-bold">
+        {/* Acciones y Leyenda de Zonas */}
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <button
+            onClick={() => shareLeaderboardToWhatsApp(leaderboard)}
+            title="Compartir Top 8 y posiciones en WhatsApp"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-[#25D366] border border-emerald-500/30 font-bold text-xs font-gaming tracking-wide uppercase transition shadow-sm"
+          >
+            <WhatsAppIcon className="w-3.5 h-3.5" />
+            <span>Compartir Top 8</span>
+          </button>
+
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-fifa-emerald/10 border border-fifa-emerald/30 text-fifa-neon font-bold">
             <span className="w-2 h-2 rounded-full bg-fifa-neon" />
-            <span>TOP 8: ZONA MUNDIAL</span>
+            <span>TOP 8: MUNDIAL</span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold">
             <span className="w-2 h-2 rounded-full bg-rose-500" />
-            <span>PUESTOS 9-16: ELIMINADOS</span>
+            <span>9-16: OUT</span>
           </div>
         </div>
       </div>
