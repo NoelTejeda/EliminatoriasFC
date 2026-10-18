@@ -10,6 +10,7 @@ export function AttendancePanel({
   onRandomSelect,
   availableMatchesCount,
   totalPendingMatches,
+  readOnly = false,
 }) {
   const presentCount = presentPlayerIds.length;
 
@@ -30,32 +31,36 @@ export function AttendancePanel({
             </h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Marca a los amigos que vinieron hoy. El fixture filtrará de inmediato los partidos pendientes entre ellos sin omitir ni repetir ningún cruce.
+            {readOnly
+              ? 'Vista en vivo de los participantes presentes hoy en la casa y partidos listos para disputarse.'
+              : 'Marca a los amigos que vinieron hoy. El fixture filtrará de inmediato los partidos pendientes entre ellos sin omitir ni repetir ningún cruce.'}
           </p>
         </div>
 
-        {/* Botones de acción rápida */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <button
-            onClick={onSelectAll}
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
-          >
-            Marcar Todos (16)
-          </button>
-          <button
-            onClick={onClearAll}
-            className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition"
-          >
-            Desmarcar Todos
-          </button>
-          <button
-            onClick={() => onRandomSelect(8)}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-fifa-neon border border-fifa-neon/30 transition"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>Simular 8 en Casa</span>
-          </button>
-        </div>
+        {/* Botones de acción rápida (solo visibles para Admin) */}
+        {!readOnly && (
+          <div className="flex flex-wrap items-center gap-1.5 text-xs">
+            <button
+              onClick={onSelectAll}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition"
+            >
+              Marcar Todos (16)
+            </button>
+            <button
+              onClick={onClearAll}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 border border-slate-700 transition"
+            >
+              Desmarcar Todos
+            </button>
+            <button
+              onClick={() => onRandomSelect(8)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700 text-fifa-neon border border-fifa-neon/30 transition"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Simular 8 en Casa</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Métrica Destacada del Filtro de Partidos */}
@@ -130,24 +135,37 @@ export function AttendancePanel({
           return (
             <button
               key={player.id}
-              onClick={() => onTogglePlayer(player.id)}
+              onClick={() => !readOnly && onTogglePlayer(player.id)}
               type="button"
+              disabled={readOnly}
               className={`relative flex items-center gap-2.5 p-2 rounded-xl border text-left transition-all duration-200 ${
+                readOnly ? 'cursor-default' : 'cursor-pointer'
+              } ${
                 isPresent
                   ? 'bg-slate-800/90 border-fifa-neon/50 text-white shadow-sm ring-1 ring-fifa-neon/40'
                   : 'bg-slate-900/40 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-300'
               }`}
             >
-              {/* Avatar con inicial */}
-              <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0 transition-transform"
-                style={{
-                  backgroundColor: isPresent ? player.color : '#1e293b',
-                  color: isPresent ? '#080c14' : '#64748b',
-                }}
-              >
-                {player.name.substring(0, 2).toUpperCase()}
-              </div>
+              {/* Avatar con inicial o foto Google */}
+              {player.photoURL ? (
+                <img
+                  src={player.photoURL}
+                  alt={player.name}
+                  className={`w-7 h-7 rounded-lg object-cover shrink-0 ${
+                    isPresent ? 'opacity-100' : 'opacity-40 grayscale'
+                  }`}
+                />
+              ) : (
+                <div
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0 transition-transform"
+                  style={{
+                    backgroundColor: isPresent ? player.color : '#1e293b',
+                    color: isPresent ? '#080c14' : '#64748b',
+                  }}
+                >
+                  {player.name.substring(0, 2).toUpperCase()}
+                </div>
+              )}
 
               {/* Nombre y equipo */}
               <div className="min-w-0 flex-1">

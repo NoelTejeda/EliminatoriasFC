@@ -1,10 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Gamepad2, Save, Shuffle, AlertCircle, CheckCircle, Shield } from 'lucide-react';
+import { Gamepad2, Save, Shuffle, CheckCircle, Shield } from 'lucide-react';
+import { resolvePlayerPhotoURL } from '../utils/tournamentCalculations';
+
+/**
+ * AVATAR CUADRADO PARA MARCADOR ACTIVO (MÓVIL Y DESKTOP)
+ * Sustituye las iniciales ("CA", "DI") por la foto de Google si el jugador la tiene,
+ * manteniendo exactamente la forma `w-12 h-12 rounded-xl aspect-square shrink-0 overflow-hidden`
+ * sin deformarse en celulares ni pantallas grandes.
+ */
+function MatchPlayerBadge({ playerName, photoURL, className = '' }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [photoURL, playerName]);
+
+  const showPhoto = Boolean(photoURL && !imgError);
+
+  return (
+    <div
+      className={`w-12 h-12 rounded-xl aspect-square shrink-0 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center font-black text-white text-base shadow-md ${className}`}
+    >
+      {showPhoto ? (
+        <img
+          src={photoURL}
+          alt={playerName}
+          referrerPolicy="no-referrer"
+          onError={() => setImgError(true)}
+          className="w-full h-full object-cover object-center block select-none"
+        />
+      ) : (
+        <span>{String(playerName || '').substring(0, 2).toUpperCase()}</span>
+      )}
+    </div>
+  );
+}
 
 export function ScoreSubmissionCard({
   activeMatch,
   availableMatches,
   allPendingMatches,
+  players = [],
+  careerHistory = {},
+  currentUser = null,
   onSelectMatch,
   onSubmitResult,
 }) {
@@ -55,6 +93,16 @@ export function ScoreSubmissionCard({
       </div>
     );
   }
+
+  const homePlayerObj = players.find((p) => p.id === activeMatch.homePlayerId) || {
+    name: activeMatch.homePlayerName,
+  };
+  const awayPlayerObj = players.find((p) => p.id === activeMatch.awayPlayerId) || {
+    name: activeMatch.awayPlayerName,
+  };
+
+  const homePhotoURL = resolvePlayerPhotoURL(homePlayerObj, careerHistory, currentUser);
+  const awayPhotoURL = resolvePlayerPhotoURL(awayPlayerObj, careerHistory, currentUser);
 
   return (
     <div className="relative glass-panel rounded-2xl p-5 border border-slate-700/80 shadow-2xl overflow-hidden bg-gradient-to-b from-[#111827]/90 to-[#0c121e]/90">
@@ -123,21 +171,22 @@ export function ScoreSubmissionCard({
           
           {/* Jugador Local */}
           <div className="md:col-span-4 flex items-center justify-between md:justify-end gap-3 p-3 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-left md:text-right">
+            <div className="text-left md:text-right min-w-0">
               <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
                 LOCAL
               </span>
-              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight">
+              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight truncate">
                 {activeMatch.homePlayerName}
               </div>
               <div className="flex items-center gap-1.5 md:justify-end text-xs text-fifa-neon mt-0.5">
-                <Shield className="w-3 h-3" />
-                <span>{activeMatch.homeTeam}</span>
+                <Shield className="w-3 h-3 shrink-0" />
+                <span className="truncate">{activeMatch.homeTeam}</span>
               </div>
             </div>
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center font-black text-white text-base shadow-md">
-              {activeMatch.homePlayerName.substring(0, 2).toUpperCase()}
-            </div>
+            <MatchPlayerBadge
+              playerName={activeMatch.homePlayerName}
+              photoURL={homePhotoURL}
+            />
           </div>
 
           {/* Marcador Central (Goles + VS) */}
@@ -210,19 +259,21 @@ export function ScoreSubmissionCard({
 
           {/* Jugador Visitante */}
           <div className="md:col-span-4 flex items-center justify-between md:justify-start gap-3 p-3 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center font-black text-white text-base shadow-md order-2 md:order-1">
-              {activeMatch.awayPlayerName.substring(0, 2).toUpperCase()}
-            </div>
-            <div className="text-right md:text-left order-1 md:order-2">
+            <MatchPlayerBadge
+              playerName={activeMatch.awayPlayerName}
+              photoURL={awayPhotoURL}
+              className="order-2 md:order-1"
+            />
+            <div className="text-right md:text-left order-1 md:order-2 min-w-0">
               <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
                 VISITANTE
               </span>
-              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight">
+              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight truncate">
                 {activeMatch.awayPlayerName}
               </div>
               <div className="flex items-center gap-1.5 md:justify-start text-xs text-sky-400 mt-0.5">
-                <Shield className="w-3 h-3" />
-                <span>{activeMatch.awayTeam}</span>
+                <Shield className="w-3 h-3 shrink-0" />
+                <span className="truncate">{activeMatch.awayTeam}</span>
               </div>
             </div>
           </div>

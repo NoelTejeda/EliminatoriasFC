@@ -1,22 +1,35 @@
 import React from 'react';
-import { Trophy, Gamepad2, Lock, Unlock, ShieldCheck, Wifi, WifiOff, Loader2 } from 'lucide-react';
+import {
+  Trophy,
+  Gamepad2,
+  Lock,
+  ShieldCheck,
+  Wifi,
+  WifiOff,
+  Loader2,
+  UserCheck,
+  LogIn,
+} from 'lucide-react';
 
 export function Header({
   summary,
   isTournamentStarted,
   playersCount,
   isAdmin,
+  currentUser,
+  myLinkedPlayer,
   isFirebaseConnected,
   isSyncing,
   onOpenAdminModal,
+  onOpenGoogleModal,
   onResetTournament,
 }) {
   const handleResetClick = () => {
     if (!isAdmin) return;
     const confirmed = window.confirm(
-      '¿Estás completamente seguro de que deseas reiniciar el torneo? Se borrarán todos los jugadores, equipos y partidos registrados.'
+      '¿Deseas reiniciar el torneo actual? Los récords históricos de carrera (partidos ganados, goles y torneos) de los jugadores se conservarán automáticamente.'
     );
-    if (confirmed) onResetTournament();
+    if (confirmed) onResetTournament(true);
   };
 
   return (
@@ -67,8 +80,8 @@ export function Header({
               </h1>
               <p className="text-xs text-slate-400 mt-0.5">
                 {isTournamentStarted
-                  ? <>120 partidos únicos · <span className="text-fifa-neon font-semibold">Top 8 clasifica al Mundial</span> · Puestos 9-16 eliminados</>
-                  : 'Fase de Configuración: Registra a los 16 amigos para comenzar el torneo'}
+                  ? <>120 partidos únicos · <span className="text-fifa-neon font-semibold">Top 8 clasifica al Mundial</span> · Analítica & Récords en vivo</>
+                  : 'Fase de Configuración Híbrida: Inscripción con Google o Registro Manual por Admin'}
               </p>
             </div>
           </div>
@@ -78,7 +91,7 @@ export function Header({
 
             {/* Barra de Progreso (si el torneo empezó) */}
             {isTournamentStarted ? (
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 min-w-[190px]">
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 min-w-[180px]">
                 <div className="flex justify-between items-center text-xs mb-1">
                   <span className="text-slate-400 font-medium">Progreso</span>
                   <span className="text-fifa-neon font-bold">
@@ -98,7 +111,7 @@ export function Header({
               </div>
             ) : (
               /* Contador de cupos en configuración */
-              <div className="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 min-w-[170px]">
+              <div className="bg-slate-900/80 border border-slate-800 rounded-xl px-3.5 py-2 min-w-[165px]">
                 <div className="flex justify-between items-center text-xs mb-1">
                   <span className="text-slate-400 font-medium">Registro</span>
                   <span className="text-fifa-neon font-bold">{playersCount} / 16</span>
@@ -115,15 +128,57 @@ export function Header({
               </div>
             )}
 
+            {/* Botón de Cuenta Google / Perfil de Jugador */}
+            <button
+              onClick={onOpenGoogleModal}
+              title={
+                currentUser
+                  ? `Conectado como ${currentUser.displayName}`
+                  : 'Conectar con Google para inscribirte o reclamar tu perfil'
+              }
+              className={`flex items-center gap-2 px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
+                currentUser
+                  ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 hover:bg-sky-500/25'
+                  : 'bg-slate-900 border-slate-700 text-slate-200 hover:border-sky-500/50 hover:text-sky-300'
+              }`}
+            >
+              {currentUser ? (
+                <>
+                  {currentUser.photoURL ? (
+                    <img
+                      src={currentUser.photoURL}
+                      alt={currentUser.displayName}
+                      className="w-5 h-5 rounded-full object-cover border border-sky-400"
+                    />
+                  ) : (
+                    <UserCheck className="w-4 h-4 text-sky-400" />
+                  )}
+                  <div className="text-left leading-tight">
+                    <div className="text-[11px] font-bold text-white truncate max-w-[110px]">
+                      {myLinkedPlayer ? myLinkedPlayer.name : currentUser.displayName?.split(' ')[0]}
+                    </div>
+                    <div className="text-[9px] text-sky-400">
+                      {myLinkedPlayer ? '✓ Perfil Vinculado' : 'Vincular Jugador'}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <LogIn className="w-4 h-4 text-sky-400" />
+                  <span>Conectar Google</span>
+                </>
+              )}
+            </button>
+
             {/* Reiniciar (solo si es Admin) */}
             {isAdmin && (
               <button
                 onClick={handleResetClick}
-                title="Borrar todos los datos y reiniciar el torneo"
+                title="Reiniciar torneo actual conservando récords históricos"
                 className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl bg-slate-900 hover:bg-rose-950/70 text-slate-300 hover:text-rose-200 border border-slate-700 hover:border-rose-700 transition-colors"
               >
                 <span>⟳</span>
-                <span>Reiniciar Todo</span>
+                <span className="hidden sm:inline">Reiniciar</span>
               </button>
             )}
 
@@ -145,7 +200,7 @@ export function Header({
               ) : (
                 <>
                   <Lock className="w-4 h-4" />
-                  <span className="hidden sm:inline">Administrar</span>
+                  <span className="hidden sm:inline">Admin</span>
                 </>
               )}
             </button>

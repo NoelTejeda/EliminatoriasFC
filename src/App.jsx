@@ -1,37 +1,60 @@
 import React, { useState } from 'react';
 import { useAdminRole } from './hooks/useAdminRole';
+import { useUserAuth } from './hooks/useUserAuth';
 import { useTournament } from './hooks/useTournament';
 import { Header } from './components/Header';
 import { AdminPinModal } from './components/AdminPinModal';
+import { GoogleProfileModal } from './components/GoogleProfileModal';
 import { TournamentSetup } from './components/TournamentSetup';
 import { AttendancePanel } from './components/AttendancePanel';
 import { ScoreSubmissionCard } from './components/ScoreSubmissionCard';
 import { LeaderboardTable } from './components/LeaderboardTable';
+import { WorldCupModule } from './components/WorldCupModule';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { FixtureViewer } from './components/FixtureViewer';
 import { NotificationToast } from './components/NotificationToast';
-import { Eye, Users, ShieldAlert } from 'lucide-react';
+import { Eye, Users, Link2, BarChart3 } from 'lucide-react';
 
 export function App() {
   // ── Autenticación de Admin (PIN) ──────────────────────────
   const { isAdmin, pinError, loginWithPin, logoutAdmin } = useAdminRole();
 
-  // ── Estado del Torneo con Firebase ───────────────────────
+  // ── Autenticación de Jugador (Google Auth + Simulador) ───
+  const {
+    currentUser,
+    authLoading,
+    authError,
+    loginWithGoogle,
+    loginWithQuickProfile,
+    logoutUser,
+  } = useUserAuth();
+
+  // ── Estado del Torneo con Firebase + Récords Híbridos ────
   const {
     players,
     matches,
     isTournamentStarted,
     presentPlayerIds,
+    careerHistory,
+    worldCup,
     activeMatch,
     activeMatchId,
     setActiveMatchId,
+    myLinkedPlayer,
     leaderboard,
     suggestedMatchesToday,
     summary,
+    globalAnalytics,
     notification,
     isFirebaseConnected,
     isSyncing,
     addPlayer,
+    selfRegisterWithGoogle,
+    claimPlayerProfile,
+    unlinkPlayerProfile,
     removePlayer,
+    loadDefaultPlayers,
+    loadDemoTournamentWithResults,
     confirmAndGenerateFixture,
     resetEntireTournament,
     togglePlayerAttendance,
@@ -40,14 +63,29 @@ export function App() {
     setRandomAttendance,
     submitMatchResult,
     resetMatchResult,
-  } = useTournament(isAdmin);
+    startWorldCupPhase,
+    executeWorldCupDraw,
+    confirmWorldCupGroups,
+    submitWorldCupGroupMatch,
+    advanceToWorldCupKnockout,
+    submitWorldCupKnockoutMatch,
+  } = useTournament(isAdmin, currentUser);
 
   // ── UI Local ──────────────────────────────────────────────
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [showRosterModal, setShowRosterModal] = useState(false);
 
   const allPendingMatches = matches.filter((m) => !m.jugado);
+
+  const handleViewMyAnalytics = (playerId) => {
+    setSelectedPlayerId(playerId);
+    setTimeout(() => {
+      const el = document.getElementById('analytics-hub-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
 
   return (
     <div className="min-h-screen bg-fifa-dark text-slate-100 flex flex-col font-sans pb-16">
@@ -58,9 +96,12 @@ export function App() {
         isTournamentStarted={isTournamentStarted}
         playersCount={players.length}
         isAdmin={isAdmin}
+        currentUser={currentUser}
+        myLinkedPlayer={myLinkedPlayer}
         isFirebaseConnected={isFirebaseConnected}
         isSyncing={isSyncing}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
+        onOpenGoogleModal={() => setIsGoogleModalOpen(true)}
         onResetTournament={resetEntireTournament}
       />
 
@@ -74,17 +115,52 @@ export function App() {
         onLogout={logoutAdmin}
       />
 
-      {/* ── BANNER MODO CONSULTA (cuando NO es admin y el torneo ya inició) ── */}
+      {/* ── MODAL DE PERFIL GOOGLE & RECLAMO DE JUGADOR ── */}
+      <GoogleProfileModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        currentUser={currentUser}
+        authLoading={authLoading}
+        authError={authError}
+        onLoginGoogle={loginWithGoogle}
+        onLoginQuickProfile={loginWithQuickProfile}
+        onLogoutUser={logoutUser}
+        players={players}
+        myLinkedPlayer={myLinkedPlayer}
+        isTournamentStarted={isTournamentStarted}
+        onSelfRegister={selfRegisterWithGoogle}
+        onClaimProfile={claimPlayerProfile}
+        onUnlinkProfile={unlinkPlayerProfile}
+        onViewMyAnalytics={isTournamentStarted ? handleViewMyAnalytics : null}
+      />
+
+      {/* ── BANNER MODO CONSULTA / VINCULACIÓN GOOGLE ── */}
       {!isAdmin && isTournamentStarted && (
-        <div className="bg-slate-900/80 border-b border-slate-800 py-2 px-4 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
+        <div className="bg-slate-900/80 border-b border-slate-800 py-2 px-4 text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-2">
           <Eye className="w-3.5 h-3.5 text-sky-400" />
           <span>
-            Estás en <strong className="text-sky-300">Modo Consulta (Solo Lectura)</strong>.
-            Los resultados y la tabla se actualizan en tiempo real.
+            Estás en <strong className="text-sky-300">Modo Consulta en Vivo</strong>.
           </span>
+          {!myLinkedPlayer ? (
+            <button
+              onClick={() => setIsGoogleModalOpen(true)}
+              className="px-2 py-0.5 rounded bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold hover:bg-sky-500/30 transition flex items-center gap-1"
+            >
+              <Link2 className="w-3 h-3" />
+              <span>Reclamar mi Jugador con Google</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => handleViewMyAnalytics(myLinkedPlayer.id)}
+              className="px-2 py-0.5 rounded bg-fifa-neon/15 border border-fifa-neon/40 text-fifa-neon font-bold hover:bg-fifa-neon/25 transition flex items-center gap-1"
+            >
+              <BarChart3 className="w-3 h-3" />
+              <span>Ver Mi Carta Pro ({myLinkedPlayer.name})</span>
+            </button>
+          )}
           <button
             onClick={() => setIsAdminModalOpen(true)}
-            className="ml-2 text-[11px] underline text-slate-500 hover:text-fifa-neon transition"
+            className="ml-1 text-[11px] underline text-slate-500 hover:text-fifa-neon transition"
           >
             ¿Eres el admin?
           </button>
@@ -94,70 +170,73 @@ export function App() {
       {/* ── CONTENEDOR PRINCIPAL ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 flex-1 w-full">
 
-        {/* FASE 1: CONFIGURACIÓN Y REGISTRO (solo cuando el torneo no ha iniciado) */}
+        {/* FASE 1: CONFIGURACIÓN HÍBRIDA Y REGISTRO (Google + Manual) */}
         {!isTournamentStarted ? (
-          <section aria-label="Fase de Configuración">
-            {/* Solo el admin puede registrar jugadores */}
-            {isAdmin ? (
-              <TournamentSetup
-                players={players}
-                onAddPlayer={addPlayer}
-                onRemovePlayer={removePlayer}
-                onConfirmTournament={confirmAndGenerateFixture}
-                onResetTournament={resetEntireTournament}
-              />
-            ) : (
-              /* Pantalla de espera para espectadores cuando el torneo no ha empezado */
-              <div className="glass-panel rounded-2xl p-10 border border-slate-800 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto mb-4">
-                  <ShieldAlert className="w-8 h-8 text-slate-500" />
-                </div>
-                <h2 className="text-2xl font-black text-white font-gaming mb-2">
-                  TORNEO AÚN NO INICIADO
-                </h2>
-                <p className="text-sm text-slate-400 max-w-md mx-auto mb-5">
-                  El administrador del torneo está configurando los participantes. 
-                  Pronto podrás seguir la tabla de posiciones en tiempo real.
-                </p>
-                <button
-                  onClick={() => setIsAdminModalOpen(true)}
-                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm font-semibold transition"
-                >
-                  Acceder como Administrador
-                </button>
-              </div>
-            )}
+          <section aria-label="Fase de Configuración Híbrida">
+            <TournamentSetup
+              players={players}
+              careerHistory={careerHistory}
+              isAdmin={isAdmin}
+              currentUser={currentUser}
+              myLinkedPlayer={myLinkedPlayer}
+              onAddPlayer={addPlayer}
+              onSelfRegisterGoogle={selfRegisterWithGoogle}
+              onClaimPlayerProfile={claimPlayerProfile}
+              onRemovePlayer={removePlayer}
+              onLoadDefaultPlayers={loadDefaultPlayers}
+              onLoadDemoTournament={loadDemoTournamentWithResults}
+              onConfirmTournament={confirmAndGenerateFixture}
+              onResetTournament={resetEntireTournament}
+              onOpenGoogleModal={() => setIsGoogleModalOpen(true)}
+              onOpenAdminModal={() => setIsAdminModalOpen(true)}
+            />
           </section>
         ) : (
           /* FASE 2: TORNEO EN CURSO */
           <>
             {/* Barra de estado + vista rápida de participantes */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="w-2.5 h-2.5 rounded-full bg-fifa-neon animate-pulse" />
                 <span className="font-bold text-white uppercase tracking-wider font-gaming">
                   TORNEO OFICIAL EN CURSO · {players.length} PARTICIPANTES · 120 PARTIDOS ÚNICOS
                 </span>
-                {!isAdmin && (
-                  <span className="ml-2 px-2 py-0.5 rounded bg-sky-500/15 border border-sky-500/30 text-sky-300 font-semibold">
-                    👁 MODO CONSULTA
+                {myLinkedPlayer && (
+                  <span className="px-2 py-0.5 rounded bg-fifa-neon/15 border border-fifa-neon/30 text-fifa-neon font-bold">
+                    ★ Jugador Activo: {myLinkedPlayer.name}
                   </span>
                 )}
               </div>
-              <button
-                onClick={() => setShowRosterModal(!showRosterModal)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold transition"
-              >
-                <Users className="w-3.5 h-3.5 text-fifa-neon" />
-                <span>{showRosterModal ? 'Ocultar participantes' : 'Ver Participantes (16)'}</span>
-              </button>
+
+              <div className="flex items-center gap-2">
+                {!myLinkedPlayer && (
+                  <button
+                    onClick={() => setIsGoogleModalOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 font-bold transition"
+                  >
+                    <Link2 className="w-3.5 h-3.5" />
+                    <span>Vincular mi Google</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowRosterModal(!showRosterModal)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold transition"
+                >
+                  <Users className="w-3.5 h-3.5 text-fifa-neon" />
+                  <span>{showRosterModal ? 'Ocultar participantes' : `Ver Participantes (${players.length})`}</span>
+                </button>
+              </div>
             </div>
 
             {/* Lista de participantes (expandible) */}
             {showRosterModal && (
               <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-700 grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-2">
                 {players.map((p, idx) => (
-                  <div key={p.id} className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 text-xs">
+                  <div
+                    key={p.id}
+                    onClick={() => handleViewMyAnalytics(p.id)}
+                    className="p-2 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-fifa-neon/50 cursor-pointer text-xs transition"
+                  >
                     <div className="flex items-center gap-1.5 font-bold text-white truncate">
                       <span className="text-[10px] text-slate-500">#{idx + 1}</span>
                       <span
@@ -166,7 +245,12 @@ export function App() {
                       />
                       <span className="truncate">{p.name}</span>
                     </div>
-                    <div className="text-[10px] text-fifa-emerald truncate mt-0.5">{p.favoriteTeam}</div>
+                    <div className="flex items-center justify-between mt-0.5">
+                      <span className="text-[10px] text-fifa-emerald truncate">{p.favoriteTeam}</span>
+                      {p.uid && (
+                        <span className="text-[8px] text-sky-400 font-bold">G✓</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -194,6 +278,9 @@ export function App() {
                   activeMatch={activeMatch}
                   availableMatches={suggestedMatchesToday}
                   allPendingMatches={allPendingMatches}
+                  players={players}
+                  careerHistory={careerHistory}
+                  currentUser={currentUser}
                   onSelectMatch={setActiveMatchId}
                   onSubmitResult={submitMatchResult}
                 />
@@ -205,7 +292,42 @@ export function App() {
               <LeaderboardTable
                 leaderboard={leaderboard}
                 presentPlayerIds={presentPlayerIds}
+                careerHistory={careerHistory}
+                myLinkedPlayer={myLinkedPlayer}
                 onSelectPlayerFilter={setSelectedPlayerId}
+              />
+            </section>
+
+            {/* FASE FINAL COPA DEL MUNDO (TOP 8): SORTEO CABEZAS DE SERIE, GRUPOS A/B, SEMIS Y FINAL */}
+            <section aria-label="Copa del Mundo Top 8">
+              <WorldCupModule
+                worldCup={worldCup}
+                leaderboard={leaderboard}
+                summary={summary}
+                isAdmin={isAdmin}
+                onStartWorldCupPhase={startWorldCupPhase}
+                onExecuteDraw={executeWorldCupDraw}
+                onConfirmGroups={confirmWorldCupGroups}
+                onSubmitGroupMatch={submitWorldCupGroupMatch}
+                onAdvanceToKnockout={advanceToWorldCupKnockout}
+                onSubmitKnockoutMatch={submitWorldCupKnockoutMatch}
+                onResetForNewEliminatoria={resetEntireTournament}
+              />
+            </section>
+
+            {/* EA FC Analytics & Player Hub (Gráficos, Carta Pro, Cara a Cara y Récords) */}
+            <section id="analytics-hub-section" aria-label="Centro de Estadísticas y Gráficos">
+              <AnalyticsDashboard
+                players={players}
+                matches={matches}
+                leaderboard={leaderboard}
+                careerHistory={careerHistory}
+                globalAnalytics={globalAnalytics}
+                selectedPlayerId={selectedPlayerId || myLinkedPlayer?.id || players[0]?.id}
+                onSelectPlayerId={setSelectedPlayerId}
+                currentUser={currentUser}
+                myLinkedPlayer={myLinkedPlayer}
+                onOpenGoogleModal={() => setIsGoogleModalOpen(true)}
               />
             </section>
 
@@ -219,7 +341,7 @@ export function App() {
                 activeMatchId={activeMatchId}
                 onSelectActiveMatch={isAdmin ? setActiveMatchId : () => {}}
                 onResetMatch={isAdmin ? resetMatchResult : () => {}}
-                selectedPlayerId={selectedPlayerId || players[0]?.id}
+                selectedPlayerId={selectedPlayerId || myLinkedPlayer?.id || players[0]?.id}
                 onSelectPlayerId={setSelectedPlayerId}
                 readOnly={!isAdmin}
               />
@@ -242,7 +364,7 @@ export function App() {
           <div className="flex items-center gap-2 text-[11px]">
             <span className={`w-1.5 h-1.5 rounded-full ${isFirebaseConnected ? 'bg-emerald-400' : 'bg-amber-400'}`} />
             <span className="text-slate-600">
-              {isFirebaseConnected ? 'Sincronizado con Firebase (EliminatoriasFC)' : 'Modo sin conexión · Datos locales'}
+              {isFirebaseConnected ? 'Sincronizado con Firebase (Plan Spark)' : 'Modo sin conexión · Datos locales'}
             </span>
           </div>
         </div>

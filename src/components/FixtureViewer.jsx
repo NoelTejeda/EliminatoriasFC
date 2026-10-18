@@ -25,6 +25,7 @@ export function FixtureViewer({
   onResetMatch,
   selectedPlayerId,
   onSelectPlayerId,
+  readOnly = false,
 }) {
   const [activeTab, setActiveTab] = useState('sugeridos'); // 'sugeridos' | 'todos' | 'jugador' | 'matriz'
   const [searchQuery, setSearchQuery] = useState('');
@@ -223,21 +224,23 @@ export function FixtureViewer({
                       </div>
                     </div>
 
-                    {/* Botón para cargar en marcador */}
-                    <button
-                      onClick={() => {
-                        onSelectActiveMatch(match.id);
-                        window.scrollTo({ top: 120, behavior: 'smooth' });
-                      }}
-                      className={`w-full py-2 px-3 rounded-lg text-xs font-bold font-gaming uppercase tracking-wider flex items-center justify-center gap-2 transition ${
-                        isActive
-                          ? 'bg-fifa-neon text-slate-950 font-black'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                      }`}
-                    >
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                      <span>{isActive ? 'Cargado en Marcador' : 'Jugar / Cargar Resultado'}</span>
-                    </button>
+                    {/* Botón para cargar en marcador (solo Admin) */}
+                    {!readOnly && (
+                      <button
+                        onClick={() => {
+                          onSelectActiveMatch(match.id);
+                          window.scrollTo({ top: 120, behavior: 'smooth' });
+                        }}
+                        className={`w-full py-2 px-3 rounded-lg text-xs font-bold font-gaming uppercase tracking-wider flex items-center justify-center gap-2 transition ${
+                          isActive
+                            ? 'bg-fifa-neon text-slate-950 font-black'
+                            : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                        }`}
+                      >
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                        <span>{isActive ? 'Cargado en Marcador' : 'Jugar / Cargar Resultado'}</span>
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -384,13 +387,15 @@ export function FixtureViewer({
                           <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                             FINALIZADO
                           </span>
-                          <button
-                            onClick={() => onResetMatch(m.id)}
-                            title="Reabrir partido para corregir marcador"
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 transition"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                          </button>
+                          {!readOnly && (
+                            <button
+                              onClick={() => onResetMatch(m.id)}
+                              title="Reabrir partido para corregir marcador"
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 transition"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </>
                       ) : (
                         <>
@@ -399,16 +404,18 @@ export function FixtureViewer({
                               En Casa
                             </span>
                           )}
-                          <button
-                            onClick={() => {
-                              onSelectActiveMatch(m.id);
-                              window.scrollTo({ top: 120, behavior: 'smooth' });
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-fifa-neon/15 hover:bg-fifa-neon text-fifa-neon hover:text-slate-950 font-bold text-xs transition flex items-center gap-1"
-                          >
-                            <Play className="w-3 h-3 fill-current" />
-                            <span>Cargar</span>
-                          </button>
+                          {!readOnly && (
+                            <button
+                              onClick={() => {
+                                onSelectActiveMatch(m.id);
+                                window.scrollTo({ top: 120, behavior: 'smooth' });
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-fifa-neon/15 hover:bg-fifa-neon text-fifa-neon hover:text-slate-950 font-bold text-xs transition flex items-center gap-1"
+                            >
+                              <Play className="w-3 h-3 fill-current" />
+                              <span>Cargar</span>
+                            </button>
+                          )}
                         </>
                       )}
                     </div>
@@ -534,15 +541,17 @@ export function FixtureViewer({
                               ¡Rival en casa!
                             </span>
                           )}
-                          <button
-                            onClick={() => {
-                              onSelectActiveMatch(m.id);
-                              window.scrollTo({ top: 120, behavior: 'smooth' });
-                            }}
-                            className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold"
-                          >
-                            Jugar
-                          </button>
+                          {!readOnly && (
+                            <button
+                              onClick={() => {
+                                onSelectActiveMatch(m.id);
+                                window.scrollTo({ top: 120, behavior: 'smooth' });
+                              }}
+                              className="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold"
+                            >
+                              Jugar
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>
