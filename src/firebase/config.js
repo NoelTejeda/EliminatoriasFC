@@ -13,13 +13,27 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
+const DEFAULT_PROJECT_ID = 'elimitanoriasfc';
+const projectId =
+  (import.meta.env.VITE_FIREBASE_PROJECT_ID || '').trim() || DEFAULT_PROJECT_ID;
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey:
+    (import.meta.env.VITE_FIREBASE_API_KEY || '').trim() ||
+    'AIzaSyA41Ky9LVuhQkAev5v3NfMgPXAKVzupXjE',
+  authDomain:
+    (import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '').trim() ||
+    `${projectId}.firebaseapp.com`,
+  projectId,
+  storageBucket:
+    (import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '').trim() ||
+    `${projectId}.firebasestorage.app`,
+  messagingSenderId:
+    (import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '').trim() ||
+    '654742690688',
+  appId:
+    (import.meta.env.VITE_FIREBASE_APP_ID || '').trim() ||
+    '1:654742690688:web:05cfeeea640049dfa03f65',
 };
 
 // Inicializar Firebase App

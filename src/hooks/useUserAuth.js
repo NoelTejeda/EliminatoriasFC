@@ -13,6 +13,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth';
@@ -32,10 +34,28 @@ export function useUserAuth() {
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Escuchar el estado real de Firebase Auth
+  // Escuchar el estado real de Firebase Auth + posibles retornos de Redirect en móvil
   useEffect(() => {
     let unsubscribe = () => {};
     try {
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result?.user) {
+            const u = result.user;
+            setCurrentUser({
+              uid: u.uid,
+              displayName: u.displayName || u.email?.split('@')[0] || 'Jugador',
+              email: u.email || '',
+              photoURL: u.photoURL || null,
+              isDemoAccount: false,
+            });
+            localStorage.removeItem(DEMO_USER_STORAGE_KEY);
+          }
+        })
+        .catch((err) => {
+          console.warn('[useUserAuth] Redirect result warning:', err);
+        });
+
       unsubscribe = onAuthStateChanged(
         auth,
         (firebaseUser) => {
@@ -74,7 +94,7 @@ export function useUserAuth() {
   }, []);
 
   /**
-   * Inicia sesión con el popup oficial de Google
+   * Inicia sesión con el popup oficial de Google (y fallback a Redirect si el navegador móvil bloquea popups)
    */
   const loginWithGoogle = useCallback(async () => {
     setAuthError(null);
@@ -96,6 +116,16 @@ export function useUserAuth() {
       setAuthLoading(false);
       console.error('[useUserAuth] Error al iniciar sesión con Google:', error);
 
+      if (error.code === 'auth/popup-blocked') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          return { success: true };
+        } catch (redirErr) {
+          setAuthError(redirErr.message || 'El navegador bloqueó la ventana emergente de Google.');
+          return { success: false, error: redirErr };
+        }
+      }
+
       if (error.code === 'auth/popup-closed-by-user') {
         setAuthError('Cerraste la ventana de inicio de sesión antes de completar.');
       } else if (
@@ -103,11 +133,17 @@ export function useUserAuth() {
         error.code === 'auth/configuration-not-found'
       ) {
         setAuthError(
-          'El proveedor de Google aún no está activado en tu consola de Firebase (Authentication > Sign-in method > Google). Puedes activarlo gratis en 1 clic o usar el acceso rápido de prueba.'
+          'El proveedor de Google aún no está activado en tu consola de Firebase (Authentication > Método de acceso > Google).'
         );
       } else if (error.code === 'auth/unauthorized-domain') {
+        const currentHost =
+          typeof window !== 'undefined' ? window.location.hostname : 'noeltejeda.github.io';
         setAuthError(
-          'Este dominio no está autorizado en Firebase Auth. Agrégalo en Firebase Console > Authentication > Settings > Authorized domains.'
+          `El dominio "${currentHost}" aún no está autorizado en Firebase. Ve a Firebase Console > Authentication > Configuración > Dominios autorizados > Agregar dominio y escribe: ${currentHost}`
+        );
+      } else if (error.code === 'auth/auth-domain-config-required') {
+        setAuthError(
+          'Faltaba authDomain en las variables de despliegue. Ya agregamos el respaldo automático (elimitanoriasfc.firebaseapp.com); haz git push para actualizar GitHub Pages.'
         );
       } else {
         setAuthError(error.message || 'No se pudo conectar con Google Auth.');
