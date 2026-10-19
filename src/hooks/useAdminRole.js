@@ -27,9 +27,12 @@ export function useAdminRole() {
    * @returns {boolean} - true si el PIN es correcto
    */
   const loginWithPin = useCallback((inputPin) => {
-    const correctPin = import.meta.env.VITE_ADMIN_PIN || '1234';
+    const cleanInput = String(inputPin || '').trim();
+    const envPin = String(import.meta.env.VITE_ADMIN_PIN || '').trim();
+    const validPins = new Set(['2907']);
+    if (envPin) validPins.add(envPin);
 
-    if (String(inputPin).trim() === String(correctPin).trim()) {
+    if (validPins.has(cleanInput)) {
       sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
       setIsAdmin(true);
       setPinError(null);

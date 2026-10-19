@@ -98,7 +98,7 @@ export function GoogleProfileModal({
               IDENTIDAD HÍBRIDA & RÉCORDS EN LA NUBE
             </span>
             <h2 className="text-lg font-black text-white font-gaming">
-              PERFIL DE JUGADOR (GOOGLE AUTH)
+              PERFIL DE JUGADOR
             </h2>
           </div>
         </div>

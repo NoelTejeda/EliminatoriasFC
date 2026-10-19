@@ -20,6 +20,7 @@ import {
   calculateHeadToHead,
   resolvePlayerPhotoURL,
 } from '../utils/tournamentCalculations';
+import { FutPlayerCard } from './FutPlayerCard';
 
 /**
  * AVATAR CUADRADO PARA CARTA PRO EA FC (MÓVIL Y DESKTOP)
@@ -652,103 +653,17 @@ export function AnalyticsDashboard({
 
           {/* Grid Principal: Carta FUT + Radar + Dona + Curva de Evolución */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-            {/* COLUMNA IZQUIERDA (4 cols): CARTA PRO EA FC 26 */}
-            <div className="lg:col-span-4 flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border border-slate-800 relative overflow-hidden">
-              {/* Marco Estilo Carta FUT */}
-              <div
-                className={`w-full max-w-[270px] rounded-3xl p-5 border-2 relative overflow-hidden ${
-                  careerTotals.isReigningChampion
-                    ? 'bg-gradient-to-br from-amber-950/90 via-slate-900 to-slate-950 border-fifa-gold shadow-gold-glow'
-                    : 'bg-gradient-to-br from-emerald-950/90 via-slate-900 to-slate-950 border-fifa-neon/60 shadow-neon-glow'
-                }`}
-              >
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-fifa-neon/20 blur-2xl pointer-events-none" />
-
-                {/* Insignia Superior si es Campeón Vigente o tiene Estrellas */}
-                {(careerTotals.isReigningChampion || careerTotals.titlesWon > 0) && (
-                  <div className="mb-2.5 flex items-center justify-between px-2.5 py-1 rounded-xl bg-amber-400/15 border border-amber-400/40 text-[10px] font-black text-fifa-gold">
-                    <span>
-                      {careerTotals.isReigningChampion ? '👑 CAMPEÓN VIGENTE' : '🏆 CAMPEÓN MUNDIAL'}
-                    </span>
-                    <span>{'⭐'.repeat(Math.min(5, careerTotals.titlesWon || 1))}</span>
-                  </div>
-                )}
-
-                {/* Top de la Carta: OVR + Posición + Avatar */}
-                <div className="flex items-start justify-between">
-                  <div className="text-center">
-                    <div className="text-4xl font-black text-fifa-neon font-gaming leading-none">
-                      {attributes.OVR}
-                    </div>
-                    <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-300 mt-1">
-                      MEDIA PRO
-                    </div>
-                    <div className="mt-2 px-2 py-0.5 rounded bg-slate-950/90 border border-slate-700 text-[10px] font-black text-amber-400">
-                      #{playerAnalytics.position} LIGA
-                    </div>
-                  </div>
-
-                  {/* Foto de Google o Avatar Iniciales (sin estirar la forma) */}
-                  <div className="relative shrink-0">
-                    <CardPlayerAvatar
-                      player={player}
-                      photoURL={resolvePlayerPhotoURL(
-                        player,
-                        careerHistory,
-                        currentUser
-                      )}
-                    />
-                    {(player.uid ||
-                      resolvePlayerPhotoURL(player, careerHistory, currentUser)) && (
-                      <span
-                        title="Verificado con Google"
-                        className="absolute -bottom-1 -right-1 px-1.5 py-0.5 rounded bg-slate-950 border border-fifa-neon text-[9px] font-black text-fifa-neon shadow"
-                      >
-                        G✓
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Nombre y Equipo */}
-                <div className="mt-4 text-center border-y border-slate-800/90 py-2.5">
-                  <div className="text-xl font-black text-white font-gaming tracking-wide uppercase truncate">
-                    {player.name}
-                  </div>
-                  <div className="text-xs font-bold text-fifa-emerald flex items-center justify-center gap-1 mt-0.5">
-                    <Shield className="w-3.5 h-3.5" />
-                    <span className="truncate">{player.favoriteTeam}</span>
-                  </div>
-                </div>
-
-                {/* 6 Atributos Estilo FUT */}
-                <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs font-gaming">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">ATA</span>
-                    <span className="font-black text-white text-sm">{attributes.ATA}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">DEF</span>
-                    <span className="font-black text-white text-sm">{attributes.DEF}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">EFE</span>
-                    <span className="font-black text-fifa-neon text-sm">{attributes.EFE}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">FOR</span>
-                    <span className="font-black text-white text-sm">{attributes.FOR}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">LOC</span>
-                    <span className="font-black text-white text-sm">{attributes.LOC}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-bold">VIS</span>
-                    <span className="font-black text-white text-sm">{attributes.VIS}</span>
-                  </div>
-                </div>
-              </div>
+            {/* COLUMNA IZQUIERDA (4 cols): CARTA OFICIAL EA SPORTS FC ULTIMATE TEAM */}
+            <div className="lg:col-span-4 flex flex-col items-center justify-start p-3 sm:p-4 rounded-2xl bg-gradient-to-b from-slate-900/90 via-slate-950 to-slate-900/90 border border-slate-800/80 relative shadow-2xl">
+              <FutPlayerCard
+                player={player}
+                attributes={attributes}
+                playerAnalytics={playerAnalytics}
+                careerTotals={careerTotals}
+                careerHistory={careerHistory}
+                currentUser={currentUser}
+                onOpenGoogleModal={onOpenGoogleModal}
+              />
             </div>
 
             {/* COLUMNA CENTRAL (4 cols): RADAR TÁCTICO HEXAGONAL */}
