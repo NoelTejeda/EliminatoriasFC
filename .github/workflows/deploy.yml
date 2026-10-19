@@ -28,7 +28,7 @@ jobs:
       - name: Build for production
         env:
           # Las credenciales de Firebase se inyectan desde GitHub Secrets con respaldos seguros
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY || 'AIzaSyA41Ky9LVuhQkAev5v3NfMgPXAKVzupXjE' }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN || 'elimitanoriasfc.firebaseapp.com' }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || 'elimitanoriasfc' }}
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET || 'elimitanoriasfc.firebasestorage.app' }}

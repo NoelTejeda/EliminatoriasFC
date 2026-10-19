@@ -168,6 +168,9 @@ export function useTournament(isAdmin = false, currentUser = null) {
         ? 'admin'
         : currentUser?.email || currentUser?.uid || 'google_user';
 
+      // 1. Guardado optimista inmediato en localStorage (garantiza que NUNCA se pierda el resultado)
+      saveLocalFallback(payload);
+
       let success = false;
       try {
         if (newState._fullSave) {
@@ -178,8 +181,6 @@ export function useTournament(isAdmin = false, currentUser = null) {
       } catch {
         success = false;
       }
-
-      saveLocalFallback(payload);
 
       if (!success) {
         showToast('Guardado localmente (modo sin conexión a la nube)', 'info');

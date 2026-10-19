@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Gamepad2, Save, Shuffle, CheckCircle, Shield } from 'lucide-react';
+import { Gamepad2, Save, Shuffle, CheckCircle, Shield, Loader2 } from 'lucide-react';
 import { resolvePlayerPhotoURL } from '../utils/tournamentCalculations';
 
 /**
@@ -58,16 +58,17 @@ export function ScoreSubmissionCard({
     }
   }, [activeMatch]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!activeMatch) return;
+    if (!activeMatch || isSubmitting) return;
 
     setIsSubmitting(true);
-    const success = onSubmitResult(activeMatch.id, localGoals, awayGoals);
-    setIsSubmitting(false);
-
-    if (success) {
-      // Los goles se limpian o actualizan en el useEffect con el siguiente partido
+    try {
+      await onSubmitResult(activeMatch.id, localGoals, awayGoals);
+    } catch (err) {
+      console.error('Error al guardar resultado oficial:', err);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -290,10 +291,19 @@ export function ScoreSubmissionCard({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-fifa-emerald via-fifa-neon to-fifa-emerald text-slate-950 font-black text-sm font-gaming tracking-wider uppercase shadow-neon-glow hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-fifa-emerald via-fifa-neon to-fifa-emerald text-slate-950 font-black text-sm font-gaming tracking-wider uppercase shadow-neon-glow hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Save className="w-4 h-4" />
-            <span>GUARDAR RESULTADO OFICIAL</span>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>GUARDANDO...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>GUARDAR RESULTADO OFICIAL</span>
+              </>
+            )}
           </button>
         </div>
       </form>

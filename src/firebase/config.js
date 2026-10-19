@@ -10,7 +10,7 @@
  */
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const DEFAULT_PROJECT_ID = 'elimitanoriasfc';
@@ -39,8 +39,10 @@ const firebaseConfig = {
 // Inicializar Firebase App
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Firestore (conexión directa limpia sin colas de IndexedDB zombi)
-export const db = getFirestore(app);
+// Inicializar Firestore con long-polling forzado (evita bloqueos de WebChannel por adblockers/antivirus)
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+});
 
 // Inicializar Firebase Authentication y proveedor de Google (100% gratuito en Plan Spark)
 export const auth = getAuth(app);

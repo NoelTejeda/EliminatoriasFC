@@ -78,13 +78,29 @@ export function subscribeTournament(onUpdate, onError) {
  * @param {Object} tournamentData - Estado completo del torneo
  * @param {string} updatedBy - Identificador del rol que escribe ('admin')
  */
+const OP_TIMEOUT_MS = 6000;
+
+/**
+ * Envoltorio con timeout para evitar que setDoc quede colgado indefinidamente
+ * cuando extensiones o adblockers bloquean la conexión del cliente (ERR_BLOCKED_BY_CLIENT).
+ */
+const withTimeout = (promise, ms = OP_TIMEOUT_MS) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`Timeout en Firestore (${ms}ms)`)), ms)
+    ),
+  ]);
+
 export async function saveTournamentState(tournamentData, updatedBy = 'admin') {
   try {
-    await setDoc(getTournamentRef(), {
-      ...tournamentData,
-      updatedAt: serverTimestamp(),
-      updatedBy,
-    });
+    await withTimeout(
+      setDoc(getTournamentRef(), {
+        ...tournamentData,
+        updatedAt: serverTimestamp(),
+        updatedBy,
+      })
+    );
     return true;
   } catch (error) {
     console.error('[Firestore] Error al guardar estado del torneo:', error);
@@ -104,15 +120,17 @@ export async function saveTournamentState(tournamentData, updatedBy = 'admin') {
  */
 export async function updateTournamentFields(partialData, updatedBy = 'admin') {
   try {
-    // Usamos setDoc con merge:true para actualización parcial eficiente
-    await setDoc(
-      getTournamentRef(),
-      {
-        ...partialData,
-        updatedAt: serverTimestamp(),
-        updatedBy,
-      },
-      { merge: true }
+    // Usamos setDoc con merge:true y timeout de seguridad
+    await withTimeout(
+      setDoc(
+        getTournamentRef(),
+        {
+          ...partialData,
+          updatedAt: serverTimestamp(),
+          updatedBy,
+        },
+        { merge: true }
+      )
     );
     return true;
   } catch (error) {
