@@ -14,6 +14,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { calculateWorldCupGroupStandings } from '../utils/tournamentCalculations';
+import { ConfirmModal } from './ConfirmModal';
 
 /**
  * Tarjeta individual de partido para Fase de Grupos del Mundial
@@ -352,6 +353,19 @@ export function WorldCupModule({
   const [rouletteCandidate, setRouletteCandidate] = useState(null);
   const [lastRevealedBall, setLastRevealedBall] = useState(null); // { slot: 'A2', player }
 
+  // Estado para el modal de confirmación personalizado
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    details: null,
+    confirmText: 'Aceptar',
+    cancelText: 'Cancelar',
+    variant: 'warning',
+    icon: null,
+    onConfirm: () => {},
+  });
+
   const standingsA = useMemo(
     () =>
       calculateWorldCupGroupStandings(
@@ -593,10 +607,18 @@ export function WorldCupModule({
               type="button"
               onClick={() => {
                 if (summary.pending > 0) {
-                  const ok = window.confirm(
-                    `Aún quedan ${summary.pending} partidos pendientes en las Eliminatorias. ¿Deseas cerrar las Eliminatorias ahora y pasar al Sorteo del Mundial con el Top 8 actual?`
-                  );
-                  if (!ok) return;
+                  setConfirmDialog({
+                    isOpen: true,
+                    title: 'Partidos Pendientes en Eliminatorias',
+                    message: `Aún quedan ${summary.pending} partidos pendientes en las Eliminatorias.`,
+                    details: '¿Deseas cerrar las Eliminatorias ahora y pasar al Sorteo del Mundial con el Top 8 actual?',
+                    confirmText: 'Cerrar e Iniciar Sorteo',
+                    cancelText: 'Volver a Eliminatorias',
+                    variant: 'warning',
+                    icon: Trophy,
+                    onConfirm: () => onStartWorldCupPhase(),
+                  });
+                  return;
                 }
                 onStartWorldCupPhase();
               }}
@@ -1055,10 +1077,17 @@ export function WorldCupModule({
                       <button
                         type="button"
                         onClick={() => {
-                          const ok = window.confirm(
-                            `¿Iniciar una nueva Eliminatoria? ${worldCup.championPlayer.name} conservará su insignia de Campeón Vigente (👑), su Estrella (⭐) y todos los jugadores conservarán su contador de clasificaciones al Top 8.`
-                          );
-                          if (ok) onResetForNewEliminatoria(true);
+                          setConfirmDialog({
+                            isOpen: true,
+                            title: 'Iniciar Nueva Eliminatoria',
+                            message: '¿Iniciar una nueva Eliminatoria archivando el torneo actual?',
+                            details: `${worldCup.championPlayer?.name} conservará su insignia de Campeón Vigente (👑), su Estrella (⭐) y todos los jugadores conservarán su contador de clasificaciones al Top 8.`,
+                            confirmText: 'Iniciar Nueva Eliminatoria',
+                            cancelText: 'Cancelar',
+                            variant: 'warning',
+                            icon: RotateCcw,
+                            onConfirm: () => onResetForNewEliminatoria(true),
+                          });
                         }}
                         className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 border border-fifa-gold text-fifa-gold font-black text-xs font-gaming uppercase tracking-wider transition inline-flex items-center gap-2"
                       >
@@ -1142,10 +1171,18 @@ export function WorldCupModule({
                   type="button"
                   onClick={() => {
                     if (!allGroupMatchesPlayed) {
-                      const ok = window.confirm(
-                        'Aún faltan partidos por jugar en los Grupos A y B. ¿Deseas avanzar a Semifinales con las posiciones actuales?'
-                      );
-                      if (!ok) return;
+                      setConfirmDialog({
+                        isOpen: true,
+                        title: 'Partidos de Grupos Pendientes',
+                        message: 'Aún faltan partidos por jugar en los Grupos A y B.',
+                        details: '¿Deseas cerrar los grupos y avanzar a Semifinales con las posiciones y clasificados actuales?',
+                        confirmText: 'Avanzar a Semifinales',
+                        cancelText: 'Volver a Grupos',
+                        variant: 'warning',
+                        icon: Swords,
+                        onConfirm: () => onAdvanceToKnockout(),
+                      });
+                      return;
                     }
                     onAdvanceToKnockout();
                   }}
@@ -1335,6 +1372,20 @@ export function WorldCupModule({
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación estilizado para el Mundial */}
+      <ConfirmModal
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        details={confirmDialog.details}
+        confirmText={confirmDialog.confirmText}
+        cancelText={confirmDialog.cancelText}
+        variant={confirmDialog.variant}
+        icon={confirmDialog.icon}
+      />
     </div>
   );
 }

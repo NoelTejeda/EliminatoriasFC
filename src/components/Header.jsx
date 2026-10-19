@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Trophy,
   Gamepad2,
@@ -9,7 +9,9 @@ import {
   Loader2,
   UserCheck,
   LogIn,
+  RotateCcw,
 } from 'lucide-react';
+import { ConfirmModal } from './ConfirmModal';
 
 export function Header({
   summary,
@@ -24,12 +26,11 @@ export function Header({
   onOpenGoogleModal,
   onResetTournament,
 }) {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
   const handleResetClick = () => {
     if (!isAdmin) return;
-    const confirmed = window.confirm(
-      '¿Deseas reiniciar el torneo actual? Los récords históricos de carrera (partidos ganados, goles y torneos) de los jugadores se conservarán automáticamente.'
-    );
-    if (confirmed) onResetTournament(true);
+    setShowResetConfirm(true);
   };
 
   return (
@@ -208,6 +209,20 @@ export function Header({
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmación para reiniciar torneo */}
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={() => onResetTournament(true)}
+        title="¿Reiniciar Torneo Actual?"
+        message="¿Deseas reiniciar el torneo actual en curso?"
+        details="Los récords históricos de carrera (partidos ganados, goles y torneos) de los jugadores se conservarán automáticamente."
+        confirmText="Reiniciar Torneo"
+        cancelText="Cancelar"
+        variant="danger"
+        icon={RotateCcw}
+      />
     </header>
   );
 }

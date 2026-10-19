@@ -16,6 +16,7 @@ import {
   Crown,
 } from 'lucide-react';
 import { getPlayerHonors } from '../utils/tournamentCalculations';
+import { ConfirmModal } from './ConfirmModal';
 
 // Paleta de colores distintivos gaming para asignar a los avatares
 const AVATAR_COLORS = [
@@ -113,13 +114,10 @@ export function TournamentSetup({
     }
   };
 
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
   const handleResetClick = () => {
-    const confirmed = window.confirm(
-      '¿Estás seguro de que deseas reiniciar la lista de registro actual? Los récords históricos de carrera se conservarán.'
-    );
-    if (confirmed) {
-      onResetTournament(true);
-    }
+    setShowResetConfirm(true);
   };
 
   return (
@@ -574,6 +572,20 @@ export function TournamentSetup({
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación para reiniciar lista de registro */}
+      <ConfirmModal
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={() => onResetTournament(true)}
+        title="¿Reiniciar Lista de Registro?"
+        message="¿Estás seguro de que deseas reiniciar la lista de registro actual?"
+        details="Los récords históricos de carrera de todos los participantes se conservarán."
+        confirmText="Reiniciar Lista"
+        cancelText="Cancelar"
+        variant="danger"
+        icon={RotateCcw}
+      />
 
     </div>
   );

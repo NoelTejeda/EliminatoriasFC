@@ -261,10 +261,10 @@ export function App() {
               <AttendancePanel
                 players={players}
                 presentPlayerIds={presentPlayerIds}
-                onTogglePlayer={isAdmin ? togglePlayerAttendance : () => {}}
-                onSelectAll={isAdmin ? selectAllAttendance : () => {}}
-                onClearAll={isAdmin ? clearAllAttendance : () => {}}
-                onRandomSelect={isAdmin ? setRandomAttendance : () => {}}
+                onTogglePlayer={isAdmin ? togglePlayerAttendance : () => { }}
+                onSelectAll={isAdmin ? selectAllAttendance : () => { }}
+                onClearAll={isAdmin ? clearAllAttendance : () => { }}
+                onRandomSelect={isAdmin ? setRandomAttendance : () => { }}
                 availableMatchesCount={suggestedMatchesToday.length}
                 totalPendingMatches={summary.pending}
                 readOnly={!isAdmin}
@@ -339,8 +339,8 @@ export function App() {
                 presentPlayerIds={presentPlayerIds}
                 suggestedMatchesToday={suggestedMatchesToday}
                 activeMatchId={activeMatchId}
-                onSelectActiveMatch={isAdmin ? setActiveMatchId : () => {}}
-                onResetMatch={isAdmin ? resetMatchResult : () => {}}
+                onSelectActiveMatch={isAdmin ? setActiveMatchId : () => { }}
+                onResetMatch={isAdmin ? resetMatchResult : () => { }}
                 selectedPlayerId={selectedPlayerId || myLinkedPlayer?.id || players[0]?.id}
                 onSelectPlayerId={setSelectedPlayerId}
                 readOnly={!isAdmin}
@@ -364,7 +364,7 @@ export function App() {
           <div className="flex items-center gap-2 text-[11px]">
             <span className={`w-1.5 h-1.5 rounded-full ${isFirebaseConnected ? 'bg-emerald-400' : 'bg-amber-400'}`} />
             <span className="text-slate-600">
-              {isFirebaseConnected ? 'Sincronizado con Firebase (Plan Spark)' : 'Modo sin conexión · Datos locales'}
+              {isFirebaseConnected ? 'Sincronizado con Firebase ' : 'Modo sin conexión · Datos locales'}
             </span>
           </div>
         </div>
