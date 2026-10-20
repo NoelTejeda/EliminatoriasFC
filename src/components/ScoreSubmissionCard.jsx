@@ -53,7 +53,6 @@ function MatchPlayerBadge({ playerName, photoURL, side = 'local', className = ''
         </div>
       ) : (
         <div className="w-full h-full flex flex-col items-center justify-center relative select-none">
-          <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-white/[0.07] absolute" />
           <span className="font-gaming font-black text-2xl sm:text-3xl text-white tracking-widest drop-shadow-md">
             {initials}
           </span>

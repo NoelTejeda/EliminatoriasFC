@@ -122,9 +122,18 @@ export function useTournament(isAdmin = false, currentUser = null) {
       unsubscribe = subscribeTournament(
         (data) => {
           if (data === null) {
-            const local = loadLocalFallback();
-            if (local) {
-              applyRemoteData(local);
+            // El documento no existe en la nube (ha sido borrado o es nuevo inicio)
+            setPlayers([]);
+            setMatches([]);
+            setPresentPlayerIds([]);
+            setActiveMatchId(null);
+            setIsTournamentStarted(false);
+            setCareerHistory({});
+            setWorldCup(INITIAL_WORLD_CUP);
+            try {
+              localStorage.removeItem(LS_KEY);
+            } catch {
+              /* ignore */
             }
           } else {
             applyRemoteData(data);
@@ -1124,6 +1133,11 @@ export function useTournament(isAdmin = false, currentUser = null) {
         });
       } else if (!preserveCareerRecords) {
         nextCareerHistory = {};
+        try {
+          localStorage.removeItem(LS_KEY);
+        } catch {
+          /* ignore */
+        }
       }
 
       const emptyState = {

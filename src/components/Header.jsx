@@ -10,6 +10,7 @@ import {
   UserCheck,
   LogIn,
   RotateCcw,
+  AlertTriangle,
 } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -27,6 +28,7 @@ export function Header({
   onResetTournament,
 }) {
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showFactoryResetConfirm, setShowFactoryResetConfirm] = useState(false);
 
   const handleResetClick = () => {
     if (!isAdmin) return;
@@ -210,18 +212,48 @@ export function Header({
         </div>
       </div>
 
-      {/* Modal de confirmación para reiniciar torneo */}
+      {/* Modal 1: Reiniciar Torneo (Nueva Temporada conservando historiales) */}
       <ConfirmModal
         isOpen={showResetConfirm}
         onClose={() => setShowResetConfirm(false)}
         onConfirm={() => onResetTournament(true)}
         title="¿Reiniciar Torneo Actual?"
-        message="¿Deseas reiniciar el torneo actual en curso?"
-        details="Los récords históricos de carrera (partidos ganados, goles y torneos) de los jugadores se conservarán automáticamente."
-        confirmText="Reiniciar Torneo"
+        message="¿Deseas reiniciar el torneo actual para comenzar una nueva temporada?"
+        details={
+          <div className="space-y-2">
+            <p>Los récords históricos de carrera (estrellas, copas ganadas y estadísticas acumuladas) se conservarán automáticamente.</p>
+            <div className="pt-2 border-t border-rose-500/20 flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowResetConfirm(false);
+                  setShowFactoryResetConfirm(true);
+                }}
+                className="text-xs text-rose-400 underline hover:text-rose-300 font-bold"
+              >
+                ¿Quieres vaciar todo desde cero (Reinicio de Fábrica)?
+              </button>
+            </div>
+          </div>
+        }
+        confirmText="Nueva Temporada"
         cancelText="Cancelar"
         variant="danger"
         icon={RotateCcw}
+      />
+
+      {/* Modal 2: Reinicio Total de Fábrica (0 Datos en Firestore y LocalStorage) */}
+      <ConfirmModal
+        isOpen={showFactoryResetConfirm}
+        onClose={() => setShowFactoryResetConfirm(false)}
+        onConfirm={() => onResetTournament(false)}
+        title="¡Borrado Total de Fábrica!"
+        message="Esta acción vaciará completamente los datos en la nube y en tu dispositivo."
+        details="Se borrarán TODOS los jugadores, partidos, resultados, copas del mundo, estadísticas acumuladas y estrellas. La aplicación quedará exactamente como el primer día en 0 datos."
+        confirmText="BORRAR TODO DEFINITIVAMENTE"
+        cancelText="Cancelar"
+        variant="danger"
+        icon={AlertTriangle}
       />
     </header>
   );
