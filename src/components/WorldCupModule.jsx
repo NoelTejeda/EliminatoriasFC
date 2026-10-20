@@ -36,11 +36,10 @@ function GroupMatchRow({ match, isAdmin, onSubmitScore }) {
 
   return (
     <div
-      className={`p-3 rounded-xl border text-xs transition ${
-        match.jugado
-          ? 'bg-slate-900/70 border-slate-800'
-          : 'bg-slate-950/90 border-slate-700/80'
-      }`}
+      className={`p-3 rounded-xl border text-xs transition ${match.jugado
+        ? 'bg-slate-900/70 border-slate-800'
+        : 'bg-slate-950/90 border-slate-700/80'
+        }`}
     >
       <div className="flex items-center justify-between text-[10px] text-slate-400 mb-2">
         <span className="font-mono font-bold text-slate-300">
@@ -159,18 +158,16 @@ function KnockoutMatchCard({ match, isAdmin, onSubmitKnockout, isFinal = false }
 
   return (
     <div
-      className={`p-5 rounded-2xl border relative overflow-hidden transition-all ${
-        isFinal
-          ? 'bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-950 border-2 border-fifa-gold/70 shadow-gold-glow'
-          : 'bg-slate-900/80 border-slate-800'
-      }`}
+      className={`p-5 rounded-2xl border relative overflow-hidden transition-all ${isFinal
+        ? 'bg-gradient-to-b from-amber-950/40 via-slate-900 to-slate-950 border-2 border-fifa-gold/70 shadow-gold-glow'
+        : 'bg-slate-900/80 border-slate-800'
+        }`}
     >
       <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
         <div>
           <span
-            className={`text-[10px] font-extrabold uppercase tracking-widest ${
-              isFinal ? 'text-fifa-gold' : 'text-fifa-neon'
-            }`}
+            className={`text-[10px] font-extrabold uppercase tracking-widest ${isFinal ? 'text-fifa-gold' : 'text-fifa-neon'
+              }`}
           >
             {match.stage}
           </span>
@@ -192,11 +189,10 @@ function KnockoutMatchCard({ match, isAdmin, onSubmitKnockout, isFinal = false }
           <div className="grid grid-cols-11 gap-2 items-center">
             {/* Jugador 1 */}
             <div
-              className={`col-span-4 p-3 rounded-xl border ${
-                match.winnerPlayer?.id === match.homePlayer.id
-                  ? 'bg-fifa-neon/15 border-fifa-neon/50'
-                  : 'bg-slate-950/80 border-slate-800'
-              }`}
+              className={`col-span-4 p-3 rounded-xl border ${match.winnerPlayer?.id === match.homePlayer.id
+                ? 'bg-fifa-neon/15 border-fifa-neon/50'
+                : 'bg-slate-950/80 border-slate-800'
+                }`}
             >
               <div className="font-black text-white text-sm font-gaming truncate">
                 {match.homePlayer.name}
@@ -239,11 +235,10 @@ function KnockoutMatchCard({ match, isAdmin, onSubmitKnockout, isFinal = false }
 
             {/* Jugador 2 */}
             <div
-              className={`col-span-4 p-3 rounded-xl border text-right ${
-                match.winnerPlayer?.id === match.awayPlayer.id
-                  ? 'bg-fifa-neon/15 border-fifa-neon/50'
-                  : 'bg-slate-950/80 border-slate-800'
-              }`}
+              className={`col-span-4 p-3 rounded-xl border text-right ${match.winnerPlayer?.id === match.awayPlayer.id
+                ? 'bg-fifa-neon/15 border-fifa-neon/50'
+                : 'bg-slate-950/80 border-slate-800'
+                }`}
             >
               <div className="font-black text-white text-sm font-gaming truncate">
                 {match.awayPlayer.name}
@@ -264,22 +259,20 @@ function KnockoutMatchCard({ match, isAdmin, onSubmitKnockout, isFinal = false }
                 <button
                   type="button"
                   onClick={() => setPenaltyWinnerId(match.homePlayer.id)}
-                  className={`py-2 px-3 rounded-lg font-bold border transition ${
-                    penaltyWinnerId === match.homePlayer.id
-                      ? 'bg-fifa-neon text-slate-950 border-fifa-neon font-black'
-                      : 'bg-slate-900 text-slate-300 border-slate-700'
-                  }`}
+                  className={`py-2 px-3 rounded-lg font-bold border transition ${penaltyWinnerId === match.homePlayer.id
+                    ? 'bg-fifa-neon text-slate-950 border-fifa-neon font-black'
+                    : 'bg-slate-900 text-slate-300 border-slate-700'
+                    }`}
                 >
                   Avanza {match.homePlayer.name}
                 </button>
                 <button
                   type="button"
                   onClick={() => setPenaltyWinnerId(match.awayPlayer.id)}
-                  className={`py-2 px-3 rounded-lg font-bold border transition ${
-                    penaltyWinnerId === match.awayPlayer.id
-                      ? 'bg-fifa-neon text-slate-950 border-fifa-neon font-black'
-                      : 'bg-slate-900 text-slate-300 border-slate-700'
-                  }`}
+                  className={`py-2 px-3 rounded-lg font-bold border transition ${penaltyWinnerId === match.awayPlayer.id
+                    ? 'bg-fifa-neon text-slate-950 border-fifa-neon font-black'
+                    : 'bg-slate-900 text-slate-300 border-slate-700'
+                    }`}
                 >
                   Avanza {match.awayPlayer.name}
                 </button>
@@ -306,11 +299,10 @@ function KnockoutMatchCard({ match, isAdmin, onSubmitKnockout, isFinal = false }
             {isAdmin && (isEditing || !match.jugado) ? (
               <button
                 type="submit"
-                className={`px-4 py-2 rounded-xl font-black text-xs font-gaming uppercase tracking-wider flex items-center gap-1.5 transition ${
-                  isFinal
-                    ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 shadow-gold-glow'
-                    : 'bg-fifa-neon text-slate-950 shadow-neon-glow'
-                }`}
+                className={`px-4 py-2 rounded-xl font-black text-xs font-gaming uppercase tracking-wider flex items-center gap-1.5 transition ${isFinal
+                  ? 'bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 shadow-gold-glow'
+                  : 'bg-fifa-neon text-slate-950 shadow-neon-glow'
+                  }`}
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>{isFinal ? 'Coronar Campeón' : 'Guardar Resultado'}</span>
@@ -363,7 +355,7 @@ export function WorldCupModule({
     cancelText: 'Cancelar',
     variant: 'warning',
     icon: null,
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const standingsA = useMemo(
@@ -458,7 +450,7 @@ export function WorldCupModule({
         await sleep(125);
       }
 
-      // ¡Bolilla extraída!
+      // ¡Jugador extraída!
       setRouletteCandidate(null);
       if (target.group === 'A') {
         currentGroupA = [...currentGroupA, chosenPlayer];
@@ -490,7 +482,7 @@ export function WorldCupModule({
   };
 
   /**
-   * Sacar 1 sola bolilla con suspenso (1 clic por turno: A2, luego B2, luego A3...)
+   * Sacar 1 solo Jugador con suspenso (1 clic por turno: A2, luego B2, luego A3...)
    */
   const handleSingleStepDraw = async () => {
     const qualified = worldCup?.qualifiedPlayers || [];
@@ -556,8 +548,8 @@ export function WorldCupModule({
       groupA: currentGroupA,
       groupB: currentGroupB,
       toastMessage: isAllDone
-        ? `🎱 ¡${chosenPlayer.name} va a ${nextTarget.slotLabel}! Grupos A y B completados.`
-        : `🎱 ¡Bolilla ${nextTarget.slotLabel}: ${chosenPlayer.name} al Grupo ${nextTarget.group}!`,
+        ? ` ¡${chosenPlayer.name} va a ${nextTarget.slotLabel}! Grupos A y B completados.`
+        : ` ¡Jugador asignado a ${nextTarget.slotLabel}: ${chosenPlayer.name} al Grupo ${nextTarget.group}!`,
     });
 
     setActiveTargetSlot(null);
@@ -653,13 +645,12 @@ export function WorldCupModule({
               return (
                 <div
                   key={row.player.id}
-                  className={`p-3 rounded-xl border text-xs ${
-                    isSeedA
-                      ? 'bg-amber-500/10 border-amber-400/50'
-                      : isSeedB
+                  className={`p-3 rounded-xl border text-xs ${isSeedA
+                    ? 'bg-amber-500/10 border-amber-400/50'
+                    : isSeedB
                       ? 'bg-sky-500/10 border-sky-400/50'
                       : 'bg-slate-900/80 border-slate-800'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between text-[10px] font-black mb-1">
                     <span
@@ -667,8 +658,8 @@ export function WorldCupModule({
                         isSeedA
                           ? 'text-amber-400'
                           : isSeedB
-                          ? 'text-sky-400'
-                          : 'text-fifa-neon'
+                            ? 'text-sky-400'
+                            : 'text-fifa-neon'
                       }
                     >
                       #{row.position}
@@ -677,8 +668,8 @@ export function WorldCupModule({
                       {isSeedA
                         ? 'Líder Grp A'
                         : isSeedB
-                        ? 'Líder Grp B'
-                        : 'Bombo 3-8'}
+                          ? 'Líder Grp B'
+                          : 'Bombo 3-8'}
                     </span>
                   </div>
                   <div className="font-black text-white font-gaming truncate">
@@ -705,13 +696,13 @@ export function WorldCupModule({
                 🎲 Gala de Sorteo Oficial con Suspenso (A2 → B2 → A3 → B3 → A4 → B4)
               </h3>
               <p className="text-xs text-slate-300 mt-0.5">
-                <strong>Cabezas de Serie Fijos:</strong> El <strong>1º ({worldCup.qualifiedPlayers[0]?.name})</strong> lidera el Grupo A (<code className="text-amber-300">A1</code>) y el <strong>2º ({worldCup.qualifiedPlayers[1]?.name})</strong> lidera el Grupo B (<code className="text-sky-300">B1</code>). Las 6 bolillas del bombo se extraen alternando uno al Grupo A y uno al Grupo B.
+                <strong>Cabezas de Serie Fijos:</strong> El <strong>1º ({worldCup.qualifiedPlayers[0]?.name})</strong> lidera el Grupo A (<code className="text-amber-300">A1</code>) y el <strong>2º ({worldCup.qualifiedPlayers[1]?.name})</strong> lidera el Grupo B (<code className="text-sky-300">B1</code>). Los 6 Jugadores del bombo se extraen alternando uno al Grupo A y uno al Grupo B.
               </p>
             </div>
 
             {isAdmin && (
               <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-                {/* Botón 1: Sacar 1 sola bolilla paso a paso */}
+                {/* Botón 1: Sacar 1 solo Jugador paso a paso */}
                 {nextSlotInfo && (
                   <button
                     type="button"
@@ -721,7 +712,7 @@ export function WorldCupModule({
                   >
                     <Sparkles className={`w-4 h-4 ${isDrawingAnim ? 'animate-spin' : ''}`} />
                     <span>
-                      Sacar Bolilla {nextSlotInfo.slotLabel} (Grupo {nextSlotInfo.group})
+                      Siguiente Jugador {nextSlotInfo.slotLabel} (Grupo {nextSlotInfo.group})
                     </span>
                   </button>
                 )}
@@ -762,16 +753,15 @@ export function WorldCupModule({
           {/* TÓMBOLA EN VIVO / ESCENARIO DE SUSPENSO */}
           {(activeTargetSlot || lastRevealedBall) && (
             <div
-              className={`p-5 rounded-2xl border-2 text-center transition-all ${
-                activeTargetSlot
-                  ? 'bg-gradient-to-r from-amber-950/60 via-slate-900 to-sky-950/60 border-amber-400 animate-pulse shadow-gold-glow'
-                  : 'bg-gradient-to-r from-emerald-950/70 via-slate-900 to-emerald-950/70 border-fifa-neon shadow-neon-glow'
-              }`}
+              className={`p-5 rounded-2xl border-2 text-center transition-all ${activeTargetSlot
+                ? 'bg-gradient-to-r from-amber-950/60 via-slate-900 to-sky-950/60 border-amber-400 animate-pulse shadow-gold-glow'
+                : 'bg-gradient-to-r from-emerald-950/70 via-slate-900 to-emerald-950/70 border-fifa-neon shadow-neon-glow'
+                }`}
             >
               {activeTargetSlot && rouletteCandidate ? (
                 <div className="space-y-1.5">
                   <div className="text-[11px] font-black uppercase tracking-widest text-amber-300 font-gaming">
-                    🥁 REDOBLE DE TAMBORES · EXTRAYENDO BOLILLA PARA CASILLA {activeTargetSlot}...
+                    🥁 REDOBLE DE TAMBORES · EXTRAYENDO JUGADOR PARA CASILLA {activeTargetSlot}...
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-white font-gaming tracking-wider">
                     🎱 {rouletteCandidate.name}{' '}
@@ -783,7 +773,7 @@ export function WorldCupModule({
               ) : lastRevealedBall ? (
                 <div className="space-y-1">
                   <div className="text-[11px] font-black uppercase tracking-widest text-fifa-neon font-gaming">
-                    ✨ ¡BOLILLA OFICIAL EXTRAÍDA PARA {lastRevealedBall.slot} (GRUPO {lastRevealedBall.group})!
+                    ✨ JUGADOR EXTRAÍDA PARA {lastRevealedBall.slot} (GRUPO {lastRevealedBall.group})!
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-white font-gaming tracking-wide">
                     🏆 {lastRevealedBall.player.name}{' '}
@@ -818,31 +808,29 @@ export function WorldCupModule({
                   inAIdx > 0
                     ? `A${inAIdx + 1}`
                     : inBIdx > 0
-                    ? `B${inBIdx + 1}`
-                    : null;
+                      ? `B${inBIdx + 1}`
+                      : null;
                 const isSpinningHighlight =
                   activeTargetSlot && rouletteCandidate?.id === potPlayer.id;
 
                 return (
                   <div
                     key={potPlayer.id}
-                    className={`p-2.5 rounded-xl border text-xs transition-all ${
-                      isSpinningHighlight
-                        ? 'bg-amber-400/25 border-amber-300 scale-[1.03] shadow-gold-glow'
-                        : assignedSlot
+                    className={`p-2.5 rounded-xl border text-xs transition-all ${isSpinningHighlight
+                      ? 'bg-amber-400/25 border-amber-300 scale-[1.03] shadow-gold-glow'
+                      : assignedSlot
                         ? 'bg-slate-900/40 border-slate-800/70 opacity-60'
                         : 'bg-slate-900 border-slate-700'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between text-[10px] font-bold">
                       <span className="text-slate-400">#{potPlayer.qualifierRank}</span>
                       {assignedSlot ? (
                         <span
-                          className={`px-1.5 py-0.5 rounded font-black ${
-                            assignedSlot.startsWith('A')
-                              ? 'bg-amber-500/20 text-amber-300'
-                              : 'bg-sky-500/20 text-sky-300'
-                          }`}
+                          className={`px-1.5 py-0.5 rounded font-black ${assignedSlot.startsWith('A')
+                            ? 'bg-amber-500/20 text-amber-300'
+                            : 'bg-sky-500/20 text-sky-300'
+                            }`}
                         >
                           Fue a {assignedSlot}
                         </span>
@@ -886,25 +874,23 @@ export function WorldCupModule({
                   return (
                     <div
                       key={slotIdx}
-                      className={`p-3 rounded-xl border flex items-center justify-between transition-all duration-300 ${
-                        isBeingDrawnNow
-                          ? 'bg-amber-500/20 border-2 border-amber-400 animate-pulse shadow-gold-glow'
-                          : isJustRevealed
+                      className={`p-3 rounded-xl border flex items-center justify-between transition-all duration-300 ${isBeingDrawnNow
+                        ? 'bg-amber-500/20 border-2 border-amber-400 animate-pulse shadow-gold-glow'
+                        : isJustRevealed
                           ? 'bg-emerald-500/20 border-2 border-fifa-neon shadow-neon-glow'
                           : p
-                          ? isSeed
-                            ? 'bg-amber-500/10 border-amber-400/50'
-                            : 'bg-slate-950 border-slate-800'
-                          : 'bg-slate-950/40 border-dashed border-slate-800 text-slate-500'
-                      }`}
+                            ? isSeed
+                              ? 'bg-amber-500/10 border-amber-400/50'
+                              : 'bg-slate-950 border-slate-800'
+                            : 'bg-slate-950/40 border-dashed border-slate-800 text-slate-500'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <span
-                          className={`w-7 h-7 rounded-lg font-mono text-xs font-black flex items-center justify-center ${
-                            isBeingDrawnNow
-                              ? 'bg-amber-400 text-slate-950'
-                              : 'bg-slate-800 text-slate-300'
-                          }`}
+                          className={`w-7 h-7 rounded-lg font-mono text-xs font-black flex items-center justify-center ${isBeingDrawnNow
+                            ? 'bg-amber-400 text-slate-950'
+                            : 'bg-slate-800 text-slate-300'
+                            }`}
                         >
                           {slotCode}
                         </span>
@@ -914,7 +900,7 @@ export function WorldCupModule({
                               🎲 Girando: {rouletteCandidate.name}...
                             </div>
                             <div className="text-[10px] text-slate-300">
-                              Extrayendo bolilla para {slotCode}...
+                              Extrayendo Jugador para {slotCode}...
                             </div>
                           </div>
                         ) : p ? (
@@ -970,25 +956,23 @@ export function WorldCupModule({
                   return (
                     <div
                       key={slotIdx}
-                      className={`p-3 rounded-xl border flex items-center justify-between transition-all duration-300 ${
-                        isBeingDrawnNow
-                          ? 'bg-sky-500/20 border-2 border-sky-400 animate-pulse'
-                          : isJustRevealed
+                      className={`p-3 rounded-xl border flex items-center justify-between transition-all duration-300 ${isBeingDrawnNow
+                        ? 'bg-sky-500/20 border-2 border-sky-400 animate-pulse'
+                        : isJustRevealed
                           ? 'bg-emerald-500/20 border-2 border-fifa-neon shadow-neon-glow'
                           : p
-                          ? isSeed
-                            ? 'bg-sky-500/10 border-sky-400/50'
-                            : 'bg-slate-950 border-slate-800'
-                          : 'bg-slate-950/40 border-dashed border-slate-800 text-slate-500'
-                      }`}
+                            ? isSeed
+                              ? 'bg-sky-500/10 border-sky-400/50'
+                              : 'bg-slate-950 border-slate-800'
+                            : 'bg-slate-950/40 border-dashed border-slate-800 text-slate-500'
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <span
-                          className={`w-7 h-7 rounded-lg font-mono text-xs font-black flex items-center justify-center ${
-                            isBeingDrawnNow
-                              ? 'bg-sky-400 text-slate-950'
-                              : 'bg-slate-800 text-slate-300'
-                          }`}
+                          className={`w-7 h-7 rounded-lg font-mono text-xs font-black flex items-center justify-center ${isBeingDrawnNow
+                            ? 'bg-sky-400 text-slate-950'
+                            : 'bg-slate-800 text-slate-300'
+                            }`}
                         >
                           {slotCode}
                         </span>
@@ -998,7 +982,7 @@ export function WorldCupModule({
                               🎲 Girando: {rouletteCandidate.name}...
                             </div>
                             <div className="text-[10px] text-slate-300">
-                              Extrayendo bolilla para {slotCode}...
+                              Extrayendo Jugador para {slotCode}...
                             </div>
                           </div>
                         ) : p ? (
@@ -1041,337 +1025,337 @@ export function WorldCupModule({
       {(worldCup.status === 'group_stage' ||
         worldCup.status === 'knockout' ||
         worldCup.status === 'completed') && (
-        <div className="mt-6 space-y-6">
-          {/* Si ya estamos en Semis o Final, mostramos primero las Llaves Eliminatorias */}
-          {(worldCup.status === 'knockout' || worldCup.status === 'completed') && (
-            <div className="space-y-6 pb-6 border-b border-slate-800">
-              {/* BANNER DE CORONACIÓN SI YA HAY CAMPEÓN DEL MUNDO */}
-              {worldCup.status === 'completed' && worldCup.championPlayer && (
-                <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border-2 border-fifa-gold shadow-gold-glow text-center space-y-3">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest">
-                    <Crown className="w-4 h-4" />
-                    <span>¡CAMPEÓN OFICIAL DEL MUNDIAL!</span>
-                    <Crown className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-3xl sm:text-4xl font-black text-white font-gaming tracking-wide">
-                    ⭐ {worldCup.championPlayer.name.toUpperCase()} ⭐
-                  </h3>
-                  <p className="text-sm font-bold text-fifa-gold">
-                    {worldCup.championPlayer.favoriteTeam} · Nuevo portador de la Corona de Campeón Vigente (👑) y Estrella Dorada (⭐)
-                  </p>
-                  <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-300 pt-2">
-                    {worldCup.runnerUpPlayer && (
-                      <span>
-                        🥈 Subcampeón: <strong>{worldCup.runnerUpPlayer.name}</strong>
-                      </span>
-                    )}
-                    {worldCup.thirdPlacePlayer && (
-                      <span>
-                        🥉 Tercer Puesto: <strong>{worldCup.thirdPlacePlayer.name}</strong>
-                      </span>
-                    )}
-                  </div>
-
-                  {isAdmin && onResetForNewEliminatoria && (
-                    <div className="pt-3">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setConfirmDialog({
-                            isOpen: true,
-                            title: 'Iniciar Nueva Eliminatoria',
-                            message: '¿Iniciar una nueva Eliminatoria archivando el torneo actual?',
-                            details: `${worldCup.championPlayer?.name} conservará su insignia de Campeón Vigente (👑), su Estrella (⭐) y todos los jugadores conservarán su contador de clasificaciones al Top 8.`,
-                            confirmText: 'Iniciar Nueva Eliminatoria',
-                            cancelText: 'Cancelar',
-                            variant: 'warning',
-                            icon: RotateCcw,
-                            onConfirm: () => onResetForNewEliminatoria(true),
-                          });
-                        }}
-                        className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 border border-fifa-gold text-fifa-gold font-black text-xs font-gaming uppercase tracking-wider transition inline-flex items-center gap-2"
-                      >
-                        <RotateCcw className="w-4 h-4" />
-                        <span>Archivar Torneo e Iniciar Nueva Eliminatoria (Conservar Distintivos)</span>
-                      </button>
+          <div className="mt-6 space-y-6">
+            {/* Si ya estamos en Semis o Final, mostramos primero las Llaves Eliminatorias */}
+            {(worldCup.status === 'knockout' || worldCup.status === 'completed') && (
+              <div className="space-y-6 pb-6 border-b border-slate-800">
+                {/* BANNER DE CORONACIÓN SI YA HAY CAMPEÓN DEL MUNDO */}
+                {worldCup.status === 'completed' && worldCup.championPlayer && (
+                  <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-500/20 via-yellow-500/15 to-amber-500/20 border-2 border-fifa-gold shadow-gold-glow text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-widest">
+                      <Crown className="w-4 h-4" />
+                      <span>¡CAMPEÓN OFICIAL DEL MUNDIAL!</span>
+                      <Crown className="w-4 h-4" />
                     </div>
-                  )}
-                </div>
-              )}
+                    <h3 className="text-3xl sm:text-4xl font-black text-white font-gaming tracking-wide">
+                      ⭐ {worldCup.championPlayer.name.toUpperCase()} ⭐
+                    </h3>
+                    <p className="text-sm font-bold text-fifa-gold">
+                      {worldCup.championPlayer.favoriteTeam} · Nuevo portador de la Corona de Campeón Vigente (👑) y Estrella Dorada (⭐)
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-300 pt-2">
+                      {worldCup.runnerUpPlayer && (
+                        <span>
+                          🥈 Subcampeón: <strong>{worldCup.runnerUpPlayer.name}</strong>
+                        </span>
+                      )}
+                      {worldCup.thirdPlacePlayer && (
+                        <span>
+                          🥉 Tercer Puesto: <strong>{worldCup.thirdPlacePlayer.name}</strong>
+                        </span>
+                      )}
+                    </div>
 
-              {/* Cuadro de Semifinales y Gran Final */}
-              <div>
-                <h3 className="text-base font-black text-white font-gaming uppercase tracking-wider flex items-center gap-2 mb-4">
-                  <Swords className="w-5 h-5 text-fifa-gold" />
-                  <span>FASE ELIMINATORIA: SEMIFINALES Y GRAN FINAL</span>
-                </h3>
+                    {isAdmin && onResetForNewEliminatoria && (
+                      <div className="pt-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setConfirmDialog({
+                              isOpen: true,
+                              title: 'Iniciar Nueva Eliminatoria',
+                              message: '¿Iniciar una nueva Eliminatoria archivando el torneo actual?',
+                              details: `${worldCup.championPlayer?.name} conservará su insignia de Campeón Vigente (👑), su Estrella (⭐) y todos los jugadores conservarán su contador de clasificaciones al Top 8.`,
+                              confirmText: 'Iniciar Nueva Eliminatoria',
+                              cancelText: 'Cancelar',
+                              variant: 'warning',
+                              icon: RotateCcw,
+                              onConfirm: () => onResetForNewEliminatoria(true),
+                            });
+                          }}
+                          className="px-5 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-900 border border-fifa-gold text-fifa-gold font-black text-xs font-gaming uppercase tracking-wider transition inline-flex items-center gap-2"
+                        >
+                          <RotateCcw className="w-4 h-4" />
+                          <span>Archivar Torneo e Iniciar Nueva Eliminatoria (Conservar Distintivos)</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {worldCup.knockoutMatches
-                    .filter((m) => m.id === 'SF1' || m.id === 'SF2')
-                    .map((m) => (
-                      <KnockoutMatchCard
-                        key={m.id}
-                        match={m}
-                        isAdmin={isAdmin}
-                        onSubmitKnockout={onSubmitKnockoutMatch}
-                      />
-                    ))}
-                </div>
+                {/* Cuadro de Semifinales y Gran Final */}
+                <div>
+                  <h3 className="text-base font-black text-white font-gaming uppercase tracking-wider flex items-center gap-2 mb-4">
+                    <Swords className="w-5 h-5 text-fifa-gold" />
+                    <span>FASE ELIMINATORIA: SEMIFINALES Y GRAN FINAL</span>
+                  </h3>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
-                  {/* Gran Final (7 cols) */}
-                  <div className="lg:col-span-7">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {worldCup.knockoutMatches
-                      .filter((m) => m.id === 'FINAL')
+                      .filter((m) => m.id === 'SF1' || m.id === 'SF2')
                       .map((m) => (
                         <KnockoutMatchCard
                           key={m.id}
                           match={m}
                           isAdmin={isAdmin}
                           onSubmitKnockout={onSubmitKnockoutMatch}
-                          isFinal={true}
                         />
                       ))}
                   </div>
 
-                  {/* Tercer Puesto (5 cols) */}
-                  <div className="lg:col-span-5">
-                    {worldCup.knockoutMatches
-                      .filter((m) => m.id === 'THIRD')
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 mt-4">
+                    {/* Gran Final (7 cols) */}
+                    <div className="lg:col-span-7">
+                      {worldCup.knockoutMatches
+                        .filter((m) => m.id === 'FINAL')
+                        .map((m) => (
+                          <KnockoutMatchCard
+                            key={m.id}
+                            match={m}
+                            isAdmin={isAdmin}
+                            onSubmitKnockout={onSubmitKnockoutMatch}
+                            isFinal={true}
+                          />
+                        ))}
+                    </div>
+
+                    {/* Tercer Puesto (5 cols) */}
+                    <div className="lg:col-span-5">
+                      {worldCup.knockoutMatches
+                        .filter((m) => m.id === 'THIRD')
+                        .map((m) => (
+                          <KnockoutMatchCard
+                            key={m.id}
+                            match={m}
+                            isAdmin={isAdmin}
+                            onSubmitKnockout={onSubmitKnockoutMatch}
+                          />
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TABLAS Y PARTIDOS DE GRUPO A Y GRUPO B */}
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h3 className="text-base font-black text-white font-gaming uppercase">
+                    FASE DE GRUPOS DEL MUNDIAL (LOS 2 PRIMEROS DE CADA GRUPO AVANZAN A SEMIFINALES)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Cruces de Semifinales: <strong>1º Grupo A vs 2º Grupo B</strong> y{' '}
+                    <strong>1º Grupo B vs 2º Grupo A</strong>.
+                  </p>
+                </div>
+
+                {worldCup.status === 'group_stage' && isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!allGroupMatchesPlayed) {
+                        setConfirmDialog({
+                          isOpen: true,
+                          title: 'Partidos de Grupos Pendientes',
+                          message: 'Aún faltan partidos por jugar en los Grupos A y B.',
+                          details: '¿Deseas cerrar los grupos y avanzar a Semifinales con las posiciones y clasificados actuales?',
+                          confirmText: 'Avanzar a Semifinales',
+                          cancelText: 'Volver a Grupos',
+                          variant: 'warning',
+                          icon: Swords,
+                          onConfirm: () => onAdvanceToKnockout(),
+                        });
+                        return;
+                      }
+                      onAdvanceToKnockout();
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fifa-emerald to-fifa-neon text-slate-950 font-black text-xs font-gaming uppercase tracking-wider shadow-neon-glow hover:brightness-110 transition flex items-center gap-2 shrink-0"
+                  >
+                    <Swords className="w-4 h-4" />
+                    <span>Cerrar Grupos y Generar Semifinales</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* COLUMNA GRUPO A */}
+                <div className="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/30 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-amber-400 font-gaming">
+                      TABLA GRUPO A
+                    </span>
+                    <span className="text-[10px] text-fifa-neon font-bold">
+                      Top 2 → Semifinales
+                    </span>
+                  </div>
+
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
+                        <th className="py-2 px-2">#</th>
+                        <th className="py-2 px-2">Jugador</th>
+                        <th className="py-2 px-1 text-center">PJ</th>
+                        <th className="py-2 px-1 text-center">GF</th>
+                        <th className="py-2 px-1 text-center">GC</th>
+                        <th className="py-2 px-1 text-center">DG</th>
+                        <th className="py-2 px-2 text-center text-fifa-neon">PTS</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {standingsA.map((row) => (
+                        <tr
+                          key={row.player.id}
+                          className={
+                            row.qualifiedToSemis ? 'bg-fifa-emerald/[0.07]' : ''
+                          }
+                        >
+                          <td className="py-2 px-2 font-black font-gaming">
+                            <span
+                              className={
+                                row.qualifiedToSemis
+                                  ? 'text-fifa-neon'
+                                  : 'text-slate-500'
+                              }
+                            >
+                              {row.position}º
+                            </span>
+                          </td>
+                          <td className="py-2 px-2">
+                            <div className="font-bold text-white flex items-center gap-1.5">
+                              <span>{row.player.name}</span>
+                              {row.qualifiedToSemis && (
+                                <span className="text-[8px] px-1 py-0.2 rounded bg-fifa-neon/20 text-fifa-neon border border-fifa-neon/40 font-black">
+                                  SEMIS
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              {row.player.favoriteTeam}
+                            </div>
+                          </td>
+                          <td className="py-2 px-1 text-center">{row.pj}</td>
+                          <td className="py-2 px-1 text-center">{row.gf}</td>
+                          <td className="py-2 px-1 text-center">{row.gc}</td>
+                          <td className="py-2 px-1 text-center font-bold">
+                            {row.dg > 0 ? `+${row.dg}` : row.dg}
+                          </td>
+                          <td className="py-2 px-2 text-center font-black text-fifa-neon font-gaming">
+                            {row.pts}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  {/* 6 Partidos del Grupo A */}
+                  <div className="space-y-2 pt-2 border-t border-slate-800">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Partidos del Grupo A (6 encuentros)
+                    </div>
+                    {worldCup.groupMatches
+                      .filter((m) => m.group === 'A')
                       .map((m) => (
-                        <KnockoutMatchCard
+                        <GroupMatchRow
                           key={m.id}
                           match={m}
                           isAdmin={isAdmin}
-                          onSubmitKnockout={onSubmitKnockoutMatch}
+                          onSubmitScore={onSubmitGroupMatch}
                         />
                       ))}
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
 
-          {/* TABLAS Y PARTIDOS DE GRUPO A Y GRUPO B */}
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div>
-                <h3 className="text-base font-black text-white font-gaming uppercase">
-                  FASE DE GRUPOS DEL MUNDIAL (LOS 2 PRIMEROS DE CADA GRUPO AVANZAN A SEMIFINALES)
-                </h3>
-                <p className="text-xs text-slate-400">
-                  Cruces de Semifinales: <strong>1º Grupo A vs 2º Grupo B</strong> y{' '}
-                  <strong>1º Grupo B vs 2º Grupo A</strong>.
-                </p>
-              </div>
-
-              {worldCup.status === 'group_stage' && isAdmin && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!allGroupMatchesPlayed) {
-                      setConfirmDialog({
-                        isOpen: true,
-                        title: 'Partidos de Grupos Pendientes',
-                        message: 'Aún faltan partidos por jugar en los Grupos A y B.',
-                        details: '¿Deseas cerrar los grupos y avanzar a Semifinales con las posiciones y clasificados actuales?',
-                        confirmText: 'Avanzar a Semifinales',
-                        cancelText: 'Volver a Grupos',
-                        variant: 'warning',
-                        icon: Swords,
-                        onConfirm: () => onAdvanceToKnockout(),
-                      });
-                      return;
-                    }
-                    onAdvanceToKnockout();
-                  }}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-fifa-emerald to-fifa-neon text-slate-950 font-black text-xs font-gaming uppercase tracking-wider shadow-neon-glow hover:brightness-110 transition flex items-center gap-2 shrink-0"
-                >
-                  <Swords className="w-4 h-4" />
-                  <span>Cerrar Grupos y Generar Semifinales</span>
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* COLUMNA GRUPO A */}
-              <div className="p-4 rounded-2xl bg-slate-900/80 border border-amber-500/30 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-amber-400 font-gaming">
-                    TABLA GRUPO A
-                  </span>
-                  <span className="text-[10px] text-fifa-neon font-bold">
-                    Top 2 → Semifinales
-                  </span>
-                </div>
-
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
-                      <th className="py-2 px-2">#</th>
-                      <th className="py-2 px-2">Jugador</th>
-                      <th className="py-2 px-1 text-center">PJ</th>
-                      <th className="py-2 px-1 text-center">GF</th>
-                      <th className="py-2 px-1 text-center">GC</th>
-                      <th className="py-2 px-1 text-center">DG</th>
-                      <th className="py-2 px-2 text-center text-fifa-neon">PTS</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {standingsA.map((row) => (
-                      <tr
-                        key={row.player.id}
-                        className={
-                          row.qualifiedToSemis ? 'bg-fifa-emerald/[0.07]' : ''
-                        }
-                      >
-                        <td className="py-2 px-2 font-black font-gaming">
-                          <span
-                            className={
-                              row.qualifiedToSemis
-                                ? 'text-fifa-neon'
-                                : 'text-slate-500'
-                            }
-                          >
-                            {row.position}º
-                          </span>
-                        </td>
-                        <td className="py-2 px-2">
-                          <div className="font-bold text-white flex items-center gap-1.5">
-                            <span>{row.player.name}</span>
-                            {row.qualifiedToSemis && (
-                              <span className="text-[8px] px-1 py-0.2 rounded bg-fifa-neon/20 text-fifa-neon border border-fifa-neon/40 font-black">
-                                SEMIS
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[10px] text-slate-400">
-                            {row.player.favoriteTeam}
-                          </div>
-                        </td>
-                        <td className="py-2 px-1 text-center">{row.pj}</td>
-                        <td className="py-2 px-1 text-center">{row.gf}</td>
-                        <td className="py-2 px-1 text-center">{row.gc}</td>
-                        <td className="py-2 px-1 text-center font-bold">
-                          {row.dg > 0 ? `+${row.dg}` : row.dg}
-                        </td>
-                        <td className="py-2 px-2 text-center font-black text-fifa-neon font-gaming">
-                          {row.pts}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {/* 6 Partidos del Grupo A */}
-                <div className="space-y-2 pt-2 border-t border-slate-800">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Partidos del Grupo A (6 encuentros)
+                {/* COLUMNA GRUPO B */}
+                <div className="p-4 rounded-2xl bg-slate-900/80 border border-sky-500/30 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-sky-400 font-gaming">
+                      TABLA GRUPO B
+                    </span>
+                    <span className="text-[10px] text-fifa-neon font-bold">
+                      Top 2 → Semifinales
+                    </span>
                   </div>
-                  {worldCup.groupMatches
-                    .filter((m) => m.group === 'A')
-                    .map((m) => (
-                      <GroupMatchRow
-                        key={m.id}
-                        match={m}
-                        isAdmin={isAdmin}
-                        onSubmitScore={onSubmitGroupMatch}
-                      />
-                    ))}
-                </div>
-              </div>
 
-              {/* COLUMNA GRUPO B */}
-              <div className="p-4 rounded-2xl bg-slate-900/80 border border-sky-500/30 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-sky-400 font-gaming">
-                    TABLA GRUPO B
-                  </span>
-                  <span className="text-[10px] text-fifa-neon font-bold">
-                    Top 2 → Semifinales
-                  </span>
-                </div>
-
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
-                      <th className="py-2 px-2">#</th>
-                      <th className="py-2 px-2">Jugador</th>
-                      <th className="py-2 px-1 text-center">PJ</th>
-                      <th className="py-2 px-1 text-center">GF</th>
-                      <th className="py-2 px-1 text-center">GC</th>
-                      <th className="py-2 px-1 text-center">DG</th>
-                      <th className="py-2 px-2 text-center text-fifa-neon">PTS</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/60">
-                    {standingsB.map((row) => (
-                      <tr
-                        key={row.player.id}
-                        className={
-                          row.qualifiedToSemis ? 'bg-fifa-emerald/[0.07]' : ''
-                        }
-                      >
-                        <td className="py-2 px-2 font-black font-gaming">
-                          <span
-                            className={
-                              row.qualifiedToSemis
-                                ? 'text-fifa-neon'
-                                : 'text-slate-500'
-                            }
-                          >
-                            {row.position}º
-                          </span>
-                        </td>
-                        <td className="py-2 px-2">
-                          <div className="font-bold text-white flex items-center gap-1.5">
-                            <span>{row.player.name}</span>
-                            {row.qualifiedToSemis && (
-                              <span className="text-[8px] px-1 py-0.2 rounded bg-fifa-neon/20 text-fifa-neon border border-fifa-neon/40 font-black">
-                                SEMIS
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-[10px] text-slate-400">
-                            {row.player.favoriteTeam}
-                          </div>
-                        </td>
-                        <td className="py-2 px-1 text-center">{row.pj}</td>
-                        <td className="py-2 px-1 text-center">{row.gf}</td>
-                        <td className="py-2 px-1 text-center">{row.gc}</td>
-                        <td className="py-2 px-1 text-center font-bold">
-                          {row.dg > 0 ? `+${row.dg}` : row.dg}
-                        </td>
-                        <td className="py-2 px-2 text-center font-black text-fifa-neon font-gaming">
-                          {row.pts}
-                        </td>
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
+                        <th className="py-2 px-2">#</th>
+                        <th className="py-2 px-2">Jugador</th>
+                        <th className="py-2 px-1 text-center">PJ</th>
+                        <th className="py-2 px-1 text-center">GF</th>
+                        <th className="py-2 px-1 text-center">GC</th>
+                        <th className="py-2 px-1 text-center">DG</th>
+                        <th className="py-2 px-2 text-center text-fifa-neon">PTS</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {standingsB.map((row) => (
+                        <tr
+                          key={row.player.id}
+                          className={
+                            row.qualifiedToSemis ? 'bg-fifa-emerald/[0.07]' : ''
+                          }
+                        >
+                          <td className="py-2 px-2 font-black font-gaming">
+                            <span
+                              className={
+                                row.qualifiedToSemis
+                                  ? 'text-fifa-neon'
+                                  : 'text-slate-500'
+                              }
+                            >
+                              {row.position}º
+                            </span>
+                          </td>
+                          <td className="py-2 px-2">
+                            <div className="font-bold text-white flex items-center gap-1.5">
+                              <span>{row.player.name}</span>
+                              {row.qualifiedToSemis && (
+                                <span className="text-[8px] px-1 py-0.2 rounded bg-fifa-neon/20 text-fifa-neon border border-fifa-neon/40 font-black">
+                                  SEMIS
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-slate-400">
+                              {row.player.favoriteTeam}
+                            </div>
+                          </td>
+                          <td className="py-2 px-1 text-center">{row.pj}</td>
+                          <td className="py-2 px-1 text-center">{row.gf}</td>
+                          <td className="py-2 px-1 text-center">{row.gc}</td>
+                          <td className="py-2 px-1 text-center font-bold">
+                            {row.dg > 0 ? `+${row.dg}` : row.dg}
+                          </td>
+                          <td className="py-2 px-2 text-center font-black text-fifa-neon font-gaming">
+                            {row.pts}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-                {/* 6 Partidos del Grupo B */}
-                <div className="space-y-2 pt-2 border-t border-slate-800">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    Partidos del Grupo B (6 encuentros)
+                  {/* 6 Partidos del Grupo B */}
+                  <div className="space-y-2 pt-2 border-t border-slate-800">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                      Partidos del Grupo B (6 encuentros)
+                    </div>
+                    {worldCup.groupMatches
+                      .filter((m) => m.group === 'B')
+                      .map((m) => (
+                        <GroupMatchRow
+                          key={m.id}
+                          match={m}
+                          isAdmin={isAdmin}
+                          onSubmitScore={onSubmitGroupMatch}
+                        />
+                      ))}
                   </div>
-                  {worldCup.groupMatches
-                    .filter((m) => m.group === 'B')
-                    .map((m) => (
-                      <GroupMatchRow
-                        key={m.id}
-                        match={m}
-                        isAdmin={isAdmin}
-                        onSubmitScore={onSubmitGroupMatch}
-                      />
-                    ))}
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Modal de confirmación estilizado para el Mundial */}
       <ConfirmModal

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Trophy, HelpCircle, BarChart3, Crown, Target } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trophy, HelpCircle, BarChart3, Crown, Target, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   getPlayerHonors,
   calculateTop8QualificationStatus,
@@ -11,7 +11,30 @@ export function LeaderboardTable({
   careerHistory = {},
   myLinkedPlayer,
   onSelectPlayerFilter,
+  isWorldCupActive = false,
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    try {
+      const saved = localStorage.getItem('leaderboard_collapsed');
+      if (saved !== null) return saved === 'true';
+    } catch {
+      // Ignorar error si localStorage no está disponible
+    }
+    return Boolean(isWorldCupActive);
+  });
+
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('leaderboard_collapsed', String(next));
+      } catch {
+        // Ignorar
+      }
+      return next;
+    });
+  };
+
   const presentSet = new Set(presentPlayerIds);
 
   const row8 = leaderboard[7] || null;
@@ -32,12 +55,27 @@ export function LeaderboardTable({
   };
 
   return (
-    <div className="glass-panel rounded-2xl p-5 border border-slate-800 shadow-2xl relative overflow-hidden">
+    <div className={`glass-panel rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-2xl relative overflow-hidden transition-all duration-300 ${
+      isCollapsed ? 'hover:border-slate-700/90' : ''
+    }`}>
       {/* Luz sutil de fondo */}
       <div className="absolute top-1/4 -left-10 w-48 h-48 bg-fifa-emerald/10 blur-3xl pointer-events-none" />
 
-      {/* Cabecera de la Tabla */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-800/80">
+      {/* Cabecera de la Tabla (Interactiva / Plegable) */}
+      <div
+        onClick={toggleCollapse}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleCollapse();
+          }
+        }}
+        className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 cursor-pointer select-none transition-all ${
+          isCollapsed ? 'pb-0' : 'pb-4 border-b border-slate-800/80'
+        }`}
+      >
         <div>
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-lg bg-fifa-gold/15 text-fifa-gold">
@@ -48,56 +86,95 @@ export function LeaderboardTable({
             </h2>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Criterio oficial: 1º Pts · 2º Dif. de Goles (DG) · 3º Goles a Favor (GF) · 4º Partidos Ganados (PG)
+            {isCollapsed ? (
+              <span className="inline-flex flex-wrap items-center gap-2">
+                <span>16 participantes · 120 partidos</span>
+                {leaderboard.length > 0 && (
+                  <span className="text-fifa-neon font-semibold">
+                    · Líder: {leaderboard[0].player.name} ({leaderboard[0].pts} pts)
+                  </span>
+                )}
+                {row8 && (
+                  <span className="text-amber-300 font-semibold">
+                    · Corte Top 8: {row8.pts} pts
+                  </span>
+                )}
+              </span>
+            ) : (
+              'Criterio oficial: 1º Pts · 2º Dif. de Goles (DG) · 3º Goles a Favor (GF) · 4º Partidos Ganados (PG)'
+            )}
           </p>
         </div>
 
-        {/* Leyenda de Zonas */}
-        <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-fifa-emerald/10 border border-fifa-emerald/30 text-fifa-neon font-bold">
-            <span className="w-2 h-2 rounded-full bg-fifa-neon" />
-            <span>TOP 8: ZONA MUNDIAL</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold">
-            <span className="w-2 h-2 rounded-full bg-rose-500" />
-            <span>PUESTOS 9-16: ELIMINADOS</span>
-          </div>
+        {/* Controles y Botón Plegar / Desplegar */}
+        <div className="flex items-center gap-2 sm:gap-3 text-xs self-start sm:self-auto">
+          {!isCollapsed && (
+            <div className="hidden lg:flex items-center gap-3">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-fifa-emerald/10 border border-fifa-emerald/30 text-fifa-neon font-bold text-[11px]">
+                <span className="w-2 h-2 rounded-full bg-fifa-neon" />
+                <span>TOP 8: ZONA MUNDIAL</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 font-bold text-[11px]">
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span>PUESTOS 9-16: ELIMINADOS</span>
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleCollapse();
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs shadow-sm hover:border-fifa-neon/50 transition-all"
+            aria-expanded={!isCollapsed}
+          >
+            <span>{isCollapsed ? 'Mostrar Tabla (16)' : 'Contraer Tabla'}</span>
+            {isCollapsed ? (
+              <ChevronDown className="w-4 h-4 text-fifa-neon" />
+            ) : (
+              <ChevronUp className="w-4 h-4 text-slate-400" />
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Termómetro de Corte Top 8 */}
-      {row8 && row9 && (
-        <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-slate-900/75 border border-slate-800/90 rounded-xl p-3 text-xs">
-          <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25">
-            <span className="text-slate-400 font-semibold flex items-center gap-1">
-              <Target className="w-3.5 h-3.5 text-fifa-neon" />
-              Corte Actual #8 ({row8.player.name}):
-            </span>
-            <span className="font-black text-fifa-neon font-gaming">
-              {row8.pts} PTS ({row8.dg >= 0 ? `+${row8.dg}` : row8.dg} DG)
-            </span>
-          </div>
-          <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/25">
-            <span className="text-slate-400 font-semibold">
-              Acechando #9 ({row9.player.name}):
-            </span>
-            <span className="font-black text-rose-300 font-gaming">
-              {row9.pts} PTS ({row9.dg >= 0 ? `+${row9.dg}` : row9.dg} DG)
-            </span>
-          </div>
-          <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25">
-            <span className="text-slate-400 font-semibold">
-              Corte Proyectado (15 Fechas):
-            </span>
-            <span className="font-black text-amber-300 font-gaming">
-              ~{sampleMath?.projectedCutoffPts || 21} PTS para clasificar
-            </span>
-          </div>
-        </div>
-      )}
+      {!isCollapsed && (
+        <>
+          {/* Termómetro de Corte Top 8 */}
+          {row8 && row9 && (
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-slate-900/75 border border-slate-800/90 rounded-xl p-3 text-xs">
+              <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/25">
+                <span className="text-slate-400 font-semibold flex items-center gap-1">
+                  <Target className="w-3.5 h-3.5 text-fifa-neon" />
+                  Corte Actual #8 ({row8.player.name}):
+                </span>
+                <span className="font-black text-fifa-neon font-gaming">
+                  {row8.pts} PTS ({row8.dg >= 0 ? `+${row8.dg}` : row8.dg} DG)
+                </span>
+              </div>
+              <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-rose-500/10 border border-rose-500/25">
+                <span className="text-slate-400 font-semibold">
+                  Acechando #9 ({row9.player.name}):
+                </span>
+                <span className="font-black text-rose-300 font-gaming">
+                  {row9.pts} PTS ({row9.dg >= 0 ? `+${row9.dg}` : row9.dg} DG)
+                </span>
+              </div>
+              <div className="flex items-center justify-between sm:justify-start gap-2 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/25">
+                <span className="text-slate-400 font-semibold">
+                  Corte Proyectado (15 Fechas):
+                </span>
+                <span className="font-black text-amber-300 font-gaming">
+                  ~{sampleMath?.projectedCutoffPts || 21} PTS para clasificar
+                </span>
+              </div>
+            </div>
+          )}
 
-      {/* Tabla Responsiva */}
-      <div className="mt-4 overflow-x-auto">
+          {/* Tabla Responsiva */}
+          <div className="mt-4 overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[860px]">
           <thead>
             <tr className="border-b border-slate-800 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 bg-slate-900/60">
@@ -404,6 +481,8 @@ export function LeaderboardTable({
           PG: 3 pts · PE: 1 pto · PP: 0 pts
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }

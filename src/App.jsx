@@ -287,7 +287,7 @@ export function App() {
               </section>
             )}
 
-            {/* Tabla de Posiciones (siempre visible) */}
+            {/* Tabla de Posiciones (plegable, contraíble para enfatizar el Mundial) */}
             <section aria-label="Tabla de Posiciones">
               <LeaderboardTable
                 leaderboard={leaderboard}
@@ -295,6 +295,7 @@ export function App() {
                 careerHistory={careerHistory}
                 myLinkedPlayer={myLinkedPlayer}
                 onSelectPlayerFilter={setSelectedPlayerId}
+                isWorldCupActive={Boolean(worldCup?.status && worldCup.status !== 'not_started')}
               />
             </section>
 

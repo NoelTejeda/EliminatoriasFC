@@ -3,12 +3,13 @@ import { Gamepad2, Save, Shuffle, CheckCircle, Shield, Loader2 } from 'lucide-re
 import { resolvePlayerPhotoURL } from '../utils/tournamentCalculations';
 
 /**
- * AVATAR CUADRADO PARA MARCADOR ACTIVO (MÓVIL Y DESKTOP)
- * Sustituye las iniciales ("CA", "DI") por la foto de Google si el jugador la tiene,
- * manteniendo exactamente la forma `w-12 h-12 rounded-xl aspect-square shrink-0 overflow-hidden`
- * sin deformarse en celulares ni pantallas grandes.
+ * AVATAR ESTILO EA SPORTS FC PARA MARCADOR ACTIVO (MÓVIL Y DESKTOP)
+ * Diseñado para lucir imponente en pantallas táctiles y escritorios aprovechando
+ * todo el ancho de la tarjeta sin dejar espacios vacíos.
+ * Muestra la foto de Google en gran formato con marco estilizado y resplandor temático,
+ * o iniciales con escudo esports si aún no tiene foto vinculada.
  */
-function MatchPlayerBadge({ playerName, photoURL, className = '' }) {
+function MatchPlayerBadge({ playerName, photoURL, side = 'local', className = '' }) {
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
@@ -16,21 +17,50 @@ function MatchPlayerBadge({ playerName, photoURL, className = '' }) {
   }, [photoURL, playerName]);
 
   const showPhoto = Boolean(photoURL && !imgError);
+  const initials = String(playerName || '').trim().substring(0, 2).toUpperCase() || 'FC';
+
+  const isLocal = side === 'local';
+  const accentBorder = isLocal
+    ? 'border-fifa-neon/50 shadow-[0_0_25px_rgba(0,245,155,0.25)]'
+    : 'border-sky-400/50 shadow-[0_0_25px_rgba(56,189,248,0.25)]';
+
+  const glowBg = isLocal
+    ? 'from-fifa-neon/20 via-slate-800 to-slate-900'
+    : 'from-sky-500/20 via-slate-800 to-slate-900';
+
+  const badgeRing = isLocal
+    ? 'ring-1 ring-fifa-neon/30 group-hover:ring-fifa-neon/60'
+    : 'ring-1 ring-sky-400/30 group-hover:ring-sky-400/60';
 
   return (
     <div
-      className={`w-12 h-12 rounded-xl aspect-square shrink-0 overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 flex items-center justify-center font-black text-white text-base shadow-md ${className}`}
+      className={`relative w-20 h-20 sm:w-24 sm:h-24 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-2xl aspect-square shrink-0 overflow-hidden border-2 ${accentBorder} ${badgeRing} transition-all duration-300 ${className}`}
     >
+      {/* Fondo con gradiente base */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${glowBg} -z-10`} />
+
       {showPhoto ? (
-        <img
-          src={photoURL}
-          alt={playerName}
-          referrerPolicy="no-referrer"
-          onError={() => setImgError(true)}
-          className="w-full h-full object-cover object-center block select-none"
-        />
+        <div className="relative w-full h-full">
+          <img
+            src={photoURL}
+            alt={playerName}
+            referrerPolicy="no-referrer"
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover object-center block select-none transform group-hover:scale-105 transition-transform duration-500"
+          />
+          {/* Viñeta degradada sutil inferior para acabado cinematográfico */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent pointer-events-none" />
+        </div>
       ) : (
-        <span>{String(playerName || '').substring(0, 2).toUpperCase()}</span>
+        <div className="w-full h-full flex flex-col items-center justify-center relative select-none">
+          <Shield className="w-10 h-10 sm:w-12 sm:h-12 text-white/[0.07] absolute" />
+          <span className="font-gaming font-black text-2xl sm:text-3xl text-white tracking-widest drop-shadow-md">
+            {initials}
+          </span>
+          <span className="text-[9px] uppercase tracking-widest font-bold text-slate-400/90 -mt-0.5">
+            JUGADOR
+          </span>
+        </div>
       )}
     </div>
   );
@@ -171,22 +201,29 @@ export function ScoreSubmissionCard({
         <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
           
           {/* Jugador Local */}
-          <div className="md:col-span-4 flex items-center justify-between md:justify-end gap-3 p-3 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800">
-            <div className="text-left md:text-right min-w-0">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+          <div className="md:col-span-4 h-full flex items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-fifa-neon/[0.05] border border-slate-800/80 hover:border-fifa-neon/30 shadow-lg relative overflow-hidden group transition-all duration-300">
+            {/* Glow sutil en la esquina */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-fifa-neon/5 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="text-left min-w-0 flex-1 z-10">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-fifa-neon/15 text-fifa-neon border border-fifa-neon/30 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-fifa-neon animate-pulse" />
                 LOCAL
-              </span>
-              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight truncate">
+              </div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-gaming tracking-tight truncate drop-shadow-sm">
                 {activeMatch.homePlayerName}
               </div>
-              <div className="flex items-center gap-1.5 md:justify-end text-xs text-fifa-neon mt-0.5">
-                <Shield className="w-3 h-3 shrink-0" />
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-300 mt-1">
+                <Shield className="w-3.5 h-3.5 text-fifa-neon shrink-0" />
                 <span className="truncate">{activeMatch.homeTeam}</span>
               </div>
             </div>
+
             <MatchPlayerBadge
               playerName={activeMatch.homePlayerName}
               photoURL={homePhotoURL}
+              side="local"
+              className="z-10"
             />
           </div>
 
@@ -259,21 +296,28 @@ export function ScoreSubmissionCard({
           </div>
 
           {/* Jugador Visitante */}
-          <div className="md:col-span-4 flex items-center justify-between md:justify-start gap-3 p-3 sm:p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+          <div className="md:col-span-4 h-full flex items-center justify-between gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-sky-500/[0.05] via-slate-900/70 to-slate-900/90 border border-slate-800/80 hover:border-sky-400/30 shadow-lg relative overflow-hidden group transition-all duration-300">
+            {/* Glow sutil en la esquina */}
+            <div className="absolute top-0 left-0 w-32 h-32 bg-sky-500/5 rounded-full blur-2xl pointer-events-none" />
+
+            {/* En desktop el avatar va a la izquierda (inner, junto al marcador), en móvil a la derecha */}
             <MatchPlayerBadge
               playerName={activeMatch.awayPlayerName}
               photoURL={awayPhotoURL}
-              className="order-2 md:order-1"
+              side="away"
+              className="order-2 md:order-1 z-10"
             />
-            <div className="text-right md:text-left order-1 md:order-2 min-w-0">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+
+            <div className="order-1 md:order-2 text-left md:text-right min-w-0 flex-1 z-10">
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-sky-500/15 text-sky-400 border border-sky-400/30 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
                 VISITANTE
-              </span>
-              <div className="text-xl sm:text-2xl font-black text-white font-gaming tracking-tight truncate">
+              </div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-black text-white font-gaming tracking-tight truncate drop-shadow-sm">
                 {activeMatch.awayPlayerName}
               </div>
-              <div className="flex items-center gap-1.5 md:justify-start text-xs text-sky-400 mt-0.5">
-                <Shield className="w-3 h-3 shrink-0" />
+              <div className="flex items-center gap-1.5 md:justify-end text-xs sm:text-sm font-semibold text-slate-300 mt-1">
+                <Shield className="w-3.5 h-3.5 text-sky-400 shrink-0" />
                 <span className="truncate">{activeMatch.awayTeam}</span>
               </div>
             </div>
