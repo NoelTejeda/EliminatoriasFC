@@ -81,6 +81,11 @@ export function useTournament(isAdmin = false, currentUser = null) {
   const [isTournamentStarted, setIsTournamentStarted] = useState(false);
   const [careerHistory, setCareerHistory] = useState({});
   const [worldCup, setWorldCup] = useState(INITIAL_WORLD_CUP);
+  const [whitelist, setWhitelist] = useState([
+    'noelati@gmail.com',
+    'franciscoguevara03@gmail.com',
+    'superkraken29@gmail.com',
+  ]);
 
   // ── Estado de Conexión a Firebase ─────────────────────────
   const [isFirebaseConnected, setIsFirebaseConnected] = useState(true);
@@ -110,6 +115,9 @@ export function useTournament(isAdmin = false, currentUser = null) {
     setIsTournamentStarted(data.isTournamentStarted || false);
     setCareerHistory(data.careerHistory || {});
     setWorldCup(data.worldCup || INITIAL_WORLD_CUP);
+    if (data.whitelist && Array.isArray(data.whitelist)) {
+      setWhitelist(data.whitelist);
+    }
     saveLocalFallback(data);
     isRemoteUpdate.current = false;
   }, []);
@@ -171,6 +179,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
         isTournamentStarted: newState.isTournamentStarted ?? isTournamentStarted,
         careerHistory: newState.careerHistory ?? careerHistory,
         worldCup: newState.worldCup ?? worldCup,
+        whitelist: newState.whitelist ?? whitelist,
       };
 
       const writerRole = isAdmin
@@ -205,6 +214,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
       isTournamentStarted,
       careerHistory,
       worldCup,
+      whitelist,
       showToast,
     ]
   );
@@ -1353,6 +1363,66 @@ export function useTournament(isAdmin = false, currentUser = null) {
     [matches, activeMatchId]
   );
 
+  // ── GESTIÓN DE LISTA BLANCA (WHITELIST) ───────────────────
+  const addToWhitelist = useCallback(
+    async (email) => {
+      const clean = String(email || '').trim().toLowerCase();
+      if (!clean) return;
+      if (whitelist.map((e) => e.toLowerCase()).includes(clean)) return;
+
+      const updated = [...whitelist, clean];
+      setWhitelist(updated);
+      await persistState({ whitelist: updated });
+      showToast(`Correo ${clean} autorizado con éxito`, 'success');
+    },
+    [whitelist, persistState, showToast]
+  );
+
+  const removeFromWhitelist = useCallback(
+    async (email) => {
+      const clean = String(email || '').trim().toLowerCase();
+      if (!clean || clean === 'noelati@gmail.com') return;
+
+      const updated = whitelist.filter((e) => e.toLowerCase() !== clean);
+      setWhitelist(updated);
+      await persistState({ whitelist: updated });
+      showToast(`Acceso revocado para ${clean}`, 'info');
+    },
+    [whitelist, persistState, showToast]
+  );
+
+  // ── COMPROBACIÓN DE ACCESO DE USUARIO ─────────────────────
+  const isUserAuthorized = useMemo(() => {
+    if (isAdmin) return true;
+    if (!currentUser) return false;
+
+    const userEmail = String(currentUser.email || '').trim().toLowerCase();
+    
+    // Correo maestro del organizador
+    if (userEmail === 'noelati@gmail.com') return true;
+
+    // Está explícitamente en la lista blanca
+    if (userEmail && whitelist.some((e) => e.toLowerCase() === userEmail)) {
+      return true;
+    }
+
+    // Tiene un jugador vinculado a su perfil
+    if (myLinkedPlayer) return true;
+
+    // Si alguno de los jugadores del torneo tiene su UID o su correo
+    if (
+      players.some(
+        (p) =>
+          (p.email && p.email.toLowerCase() === userEmail) ||
+          (p.uid && p.uid === currentUser.uid)
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [isAdmin, currentUser, whitelist, myLinkedPlayer, players]);
+
   return {
     // Estado
     players,
@@ -1361,10 +1431,15 @@ export function useTournament(isAdmin = false, currentUser = null) {
     presentPlayerIds,
     careerHistory,
     worldCup,
+    whitelist,
+    isUserAuthorized,
     activeMatch,
     activeMatchId,
     setActiveMatchId,
     myLinkedPlayer,
+    // Acciones de Acceso
+    addToWhitelist,
+    removeFromWhitelist,
     // Firebase
     isFirebaseConnected,
     isSyncing,

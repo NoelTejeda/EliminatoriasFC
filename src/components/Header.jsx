@@ -11,6 +11,7 @@ import {
   LogIn,
   RotateCcw,
   AlertTriangle,
+  Shield,
 } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -23,6 +24,8 @@ export function Header({
   myLinkedPlayer,
   isFirebaseConnected,
   isSyncing,
+  whitelistCount = 0,
+  onOpenWhitelistModal,
   onOpenAdminModal,
   onOpenGoogleModal,
   onResetTournament,
@@ -172,6 +175,21 @@ export function Header({
                 </>
               )}
             </button>
+
+            {/* Gestión de Lista Blanca (solo si es Admin) */}
+            {isAdmin && (
+              <button
+                onClick={onOpenWhitelistModal}
+                title="Gestionar lista blanca de correos autorizados"
+                className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-sky-300 border border-slate-700 hover:border-sky-500/40 transition-colors"
+              >
+                <Shield className="w-4 h-4 text-sky-400" />
+                <span className="hidden sm:inline">Accesos</span>
+                <span className="px-1.5 py-0.2 rounded-full bg-sky-500/20 text-sky-300 text-[10px]">
+                  {whitelistCount}
+                </span>
+              </button>
+            )}
 
             {/* Reiniciar (solo si es Admin) */}
             {isAdmin && (

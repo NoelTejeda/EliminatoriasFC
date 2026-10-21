@@ -13,6 +13,8 @@ import { WorldCupModule } from './components/WorldCupModule';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
 import { FixtureViewer } from './components/FixtureViewer';
 import { NotificationToast } from './components/NotificationToast';
+import { LobbyHero } from './components/LobbyHero';
+import { WhitelistModal } from './components/WhitelistModal';
 import { Eye, Users, Link2, BarChart3 } from 'lucide-react';
 
 export function App() {
@@ -37,6 +39,8 @@ export function App() {
     presentPlayerIds,
     careerHistory,
     worldCup,
+    whitelist,
+    isUserAuthorized,
     activeMatch,
     activeMatchId,
     setActiveMatchId,
@@ -48,6 +52,8 @@ export function App() {
     notification,
     isFirebaseConnected,
     isSyncing,
+    addToWhitelist,
+    removeFromWhitelist,
     addPlayer,
     selfRegisterWithGoogle,
     claimPlayerProfile,
@@ -74,8 +80,11 @@ export function App() {
   // ── UI Local ──────────────────────────────────────────────
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+  const [isWhitelistModalOpen, setIsWhitelistModalOpen] = useState(false);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [showRosterModal, setShowRosterModal] = useState(false);
+
+  const canAccessTournament = isAdmin || isUserAuthorized;
 
   const allPendingMatches = matches.filter((m) => !m.jugado);
 
@@ -86,6 +95,36 @@ export function App() {
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   };
+
+  // ── PANTALLA INTRO / LOBBY (Si no está logueado o no está autorizado) ──
+  if (!canAccessTournament) {
+    return (
+      <div className="min-h-screen bg-fifa-dark text-slate-100 flex flex-col font-sans">
+        <LobbyHero
+          onLoginGoogle={loginWithGoogle}
+          onOpenAdminModal={() => setIsAdminModalOpen(true)}
+          authLoading={authLoading}
+          currentUser={currentUser}
+          isPendingApproval={Boolean(currentUser && !isUserAuthorized)}
+          onLogoutUser={logoutUser}
+          adminEmail="noelati@gmail.com"
+        />
+
+        {/* Modal de PIN Admin */}
+        <AdminPinModal
+          isOpen={isAdminModalOpen}
+          onClose={() => setIsAdminModalOpen(false)}
+          onLoginWithPin={loginWithPin}
+          pinError={pinError}
+          isAdmin={isAdmin}
+          onLogout={logoutAdmin}
+        />
+
+        {/* Notificaciones */}
+        <NotificationToast notification={notification} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-fifa-dark text-slate-100 flex flex-col font-sans pb-16">
@@ -100,6 +139,8 @@ export function App() {
         myLinkedPlayer={myLinkedPlayer}
         isFirebaseConnected={isFirebaseConnected}
         isSyncing={isSyncing}
+        whitelistCount={whitelist.length}
+        onOpenWhitelistModal={() => setIsWhitelistModalOpen(true)}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
         onOpenGoogleModal={() => setIsGoogleModalOpen(true)}
         onResetTournament={resetEntireTournament}
@@ -132,6 +173,16 @@ export function App() {
         onClaimProfile={claimPlayerProfile}
         onUnlinkProfile={unlinkPlayerProfile}
         onViewMyAnalytics={isTournamentStarted ? handleViewMyAnalytics : null}
+      />
+
+      {/* ── MODAL DE GESTIÓN DE ACCESO (WHITELIST) ── */}
+      <WhitelistModal
+        isOpen={isWhitelistModalOpen}
+        onClose={() => setIsWhitelistModalOpen(false)}
+        whitelist={whitelist}
+        onAddEmail={addToWhitelist}
+        onRemoveEmail={removeFromWhitelist}
+        adminEmail="noelati@gmail.com"
       />
 
       {/* ── BANNER MODO CONSULTA / VINCULACIÓN GOOGLE ── */}
