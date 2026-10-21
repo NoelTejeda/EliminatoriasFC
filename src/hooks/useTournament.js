@@ -86,6 +86,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
     'franciscoguevara03@gmail.com',
     'superkraken29@gmail.com',
   ]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
   // ── Estado de Conexión a Firebase ─────────────────────────
   const [isFirebaseConnected, setIsFirebaseConnected] = useState(true);
@@ -117,6 +118,9 @@ export function useTournament(isAdmin = false, currentUser = null) {
     setWorldCup(data.worldCup || INITIAL_WORLD_CUP);
     if (data.whitelist && Array.isArray(data.whitelist)) {
       setWhitelist(data.whitelist);
+    }
+    if (data.pendingRequests && Array.isArray(data.pendingRequests)) {
+      setPendingRequests(data.pendingRequests);
     }
     saveLocalFallback(data);
     isRemoteUpdate.current = false;
@@ -180,6 +184,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
         careerHistory: newState.careerHistory ?? careerHistory,
         worldCup: newState.worldCup ?? worldCup,
         whitelist: newState.whitelist ?? whitelist,
+        pendingRequests: newState.pendingRequests ?? pendingRequests,
       };
 
       const writerRole = isAdmin
@@ -215,6 +220,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
       careerHistory,
       worldCup,
       whitelist,
+      pendingRequests,
       showToast,
     ]
   );
@@ -1391,6 +1397,61 @@ export function useTournament(isAdmin = false, currentUser = null) {
     [whitelist, persistState, showToast]
   );
 
+  // ── SOLICITUDES PENDIENTES DE ACCESO ──────────────────────
+  const requestAccess = useCallback(
+    async (user) => {
+      if (!user || !user.email) return;
+      const userEmail = String(user.email).trim().toLowerCase();
+
+      // Si ya está autorizado, no hacer nada
+      if (whitelist.some((e) => e.toLowerCase() === userEmail)) return;
+      if (pendingRequests.some((r) => r.email?.toLowerCase() === userEmail)) {
+        return;
+      }
+
+      const newReq = {
+        email: userEmail,
+        displayName: user.displayName || userEmail.split('@')[0],
+        photoURL: user.photoURL || null,
+        requestedAt: new Date().toISOString(),
+      };
+
+      const updated = [newReq, ...pendingRequests.filter((r) => r.email?.toLowerCase() !== userEmail)];
+      setPendingRequests(updated);
+      await persistState({ pendingRequests: updated }, { allowUserWrite: true });
+    },
+    [whitelist, pendingRequests, persistState]
+  );
+
+  const approveRequest = useCallback(
+    async (requestEmail) => {
+      const clean = String(requestEmail || '').trim().toLowerCase();
+      if (!clean) return;
+
+      const updatedWhitelist = whitelist.includes(clean) ? whitelist : [...whitelist, clean];
+      const updatedPending = pendingRequests.filter((r) => r.email?.toLowerCase() !== clean);
+
+      setWhitelist(updatedWhitelist);
+      setPendingRequests(updatedPending);
+      await persistState({ whitelist: updatedWhitelist, pendingRequests: updatedPending });
+      showToast(`¡Acceso aprobado para ${clean}!`, 'success');
+    },
+    [whitelist, pendingRequests, persistState, showToast]
+  );
+
+  const rejectRequest = useCallback(
+    async (requestEmail) => {
+      const clean = String(requestEmail || '').trim().toLowerCase();
+      if (!clean) return;
+
+      const updatedPending = pendingRequests.filter((r) => r.email?.toLowerCase() !== clean);
+      setPendingRequests(updatedPending);
+      await persistState({ pendingRequests: updatedPending });
+      showToast(`Solicitud descartada`, 'info');
+    },
+    [pendingRequests, persistState, showToast]
+  );
+
   // ── COMPROBACIÓN DE ACCESO DE USUARIO ─────────────────────
   const isUserAuthorized = useMemo(() => {
     if (isAdmin) return true;
@@ -1432,6 +1493,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
     careerHistory,
     worldCup,
     whitelist,
+    pendingRequests,
     isUserAuthorized,
     activeMatch,
     activeMatchId,
@@ -1440,6 +1502,9 @@ export function useTournament(isAdmin = false, currentUser = null) {
     // Acciones de Acceso
     addToWhitelist,
     removeFromWhitelist,
+    requestAccess,
+    approveRequest,
+    rejectRequest,
     // Firebase
     isFirebaseConnected,
     isSyncing,

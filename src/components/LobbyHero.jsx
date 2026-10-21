@@ -20,9 +20,16 @@ export function LobbyHero({
   authLoading = false,
   currentUser = null,
   isPendingApproval = false,
+  onRequestAccess,
   onLogoutUser,
   adminEmail = 'noelati@gmail.com',
 }) {
+  // Enviar automáticamente la solicitud al organizador en cuanto se detecta la sesión en espera
+  React.useEffect(() => {
+    if (isPendingApproval && currentUser && onRequestAccess) {
+      onRequestAccess(currentUser);
+    }
+  }, [isPendingApproval, currentUser, onRequestAccess]);
   return (
     <div className="relative min-h-[calc(100vh-80px)] flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8 py-10 overflow-hidden">
       {/* ── LUCES DE FONDO AMBIENTALES ── */}
@@ -117,15 +124,21 @@ export function LobbyHero({
 
               <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 space-y-1.5">
                 <div className="flex items-center gap-1.5 font-bold text-amber-300">
-                  <Clock className="w-4 h-4 shrink-0" />
-                  <span>Esperando Aprobación de Acceso</span>
+                  <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                  <span>Solicitud Enviada en Tiempo Real</span>
                 </div>
-                <p className="leading-relaxed text-[11px] sm:text-xs">
-                  Tu cuenta de Google está autenticada, pero aún no has sido asignado a un jugador ni autorizado en la lista del torneo.
+                <p className="leading-relaxed text-[11px] sm:text-xs text-slate-300">
+                  Tu solicitud ya le apareció en pantalla a <strong className="text-white">Noel</strong>. En cuanto él presione <strong className="text-fifa-neon">"Aprobar"</strong> en su panel, tu pantalla se actualizará automáticamente y entrarás al torneo.
                 </p>
-                <p className="text-[11px] text-slate-400 pt-1 border-t border-amber-500/20">
-                  Pídele al organizador (<strong className="text-white">Noel</strong>) que autorice tu correo o vincule tu jugador para desbloquear las tablas y estadísticas.
-                </p>
+                <div className="pt-2 flex items-center justify-between border-t border-amber-500/20 text-[10px] text-amber-300/80">
+                  <span>Estado: Esperando clic de aprobación</span>
+                  <button
+                    onClick={() => onRequestAccess && onRequestAccess(currentUser)}
+                    className="underline text-sky-400 hover:text-sky-300 font-bold"
+                  >
+                    Reenviar aviso
+                  </button>
+                </div>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-2 pt-2">

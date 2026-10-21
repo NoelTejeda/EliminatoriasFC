@@ -40,6 +40,7 @@ export function App() {
     careerHistory,
     worldCup,
     whitelist,
+    pendingRequests,
     isUserAuthorized,
     activeMatch,
     activeMatchId,
@@ -54,6 +55,9 @@ export function App() {
     isSyncing,
     addToWhitelist,
     removeFromWhitelist,
+    requestAccess,
+    approveRequest,
+    rejectRequest,
     addPlayer,
     selfRegisterWithGoogle,
     claimPlayerProfile,
@@ -106,6 +110,7 @@ export function App() {
           authLoading={authLoading}
           currentUser={currentUser}
           isPendingApproval={Boolean(currentUser && !isUserAuthorized)}
+          onRequestAccess={requestAccess}
           onLogoutUser={logoutUser}
           adminEmail="noelati@gmail.com"
         />
@@ -140,6 +145,7 @@ export function App() {
         isFirebaseConnected={isFirebaseConnected}
         isSyncing={isSyncing}
         whitelistCount={whitelist.length}
+        pendingRequestsCount={pendingRequests.length}
         onOpenWhitelistModal={() => setIsWhitelistModalOpen(true)}
         onOpenAdminModal={() => setIsAdminModalOpen(true)}
         onOpenGoogleModal={() => setIsGoogleModalOpen(true)}
@@ -180,8 +186,11 @@ export function App() {
         isOpen={isWhitelistModalOpen}
         onClose={() => setIsWhitelistModalOpen(false)}
         whitelist={whitelist}
+        pendingRequests={pendingRequests}
         onAddEmail={addToWhitelist}
         onRemoveEmail={removeFromWhitelist}
+        onApproveRequest={approveRequest}
+        onRejectRequest={rejectRequest}
         adminEmail="noelati@gmail.com"
       />
 

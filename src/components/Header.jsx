@@ -25,6 +25,7 @@ export function Header({
   isFirebaseConnected,
   isSyncing,
   whitelistCount = 0,
+  pendingRequestsCount = 0,
   onOpenWhitelistModal,
   onOpenAdminModal,
   onOpenGoogleModal,
@@ -180,14 +181,32 @@ export function Header({
             {isAdmin && (
               <button
                 onClick={onOpenWhitelistModal}
-                title="Gestionar lista blanca de correos autorizados"
-                className="flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 text-sky-300 border border-slate-700 hover:border-sky-500/40 transition-colors"
+                title={
+                  pendingRequestsCount > 0
+                    ? `¡Tienes ${pendingRequestsCount} solicitud(es) de acceso pendiente(s)!`
+                    : 'Gestionar lista blanca de correos autorizados'
+                }
+                className={`relative flex items-center gap-1.5 px-3 py-2.5 text-xs font-bold rounded-xl border transition-colors ${
+                  pendingRequestsCount > 0
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-neon-glow animate-pulse'
+                    : 'bg-slate-900 hover:bg-slate-800 text-sky-300 border-slate-700 hover:border-sky-500/40'
+                }`}
               >
-                <Shield className="w-4 h-4 text-sky-400" />
+                <Shield
+                  className={`w-4 h-4 ${
+                    pendingRequestsCount > 0 ? 'text-amber-400' : 'text-sky-400'
+                  }`}
+                />
                 <span className="hidden sm:inline">Accesos</span>
-                <span className="px-1.5 py-0.2 rounded-full bg-sky-500/20 text-sky-300 text-[10px]">
-                  {whitelistCount}
-                </span>
+                {pendingRequestsCount > 0 ? (
+                  <span className="px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-black text-[10px]">
+                    +{pendingRequestsCount}
+                  </span>
+                ) : (
+                  <span className="px-1.5 py-0.2 rounded-full bg-sky-500/20 text-sky-300 text-[10px]">
+                    {whitelistCount}
+                  </span>
+                )}
               </button>
             )}
 
