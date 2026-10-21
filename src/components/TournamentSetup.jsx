@@ -124,42 +124,42 @@ export function TournamentSetup({
     <div className="space-y-6">
 
       {/* ════════════════════════════════════════════════════════════════
-          BLOQUE A: INSCRIPCIÓN RÁPIDA CON GOOGLE (PARA TODOS LOS JUGADORES)
+          BLOQUE A: INSCRIPCIÓN / ELECCIÓN DE EQUIPO
          ════════════════════════════════════════════════════════════════ */}
-      <div className="glass-panel rounded-2xl p-5 border border-sky-500/30 shadow-xl relative overflow-hidden bg-gradient-to-r from-sky-950/30 via-slate-900/90 to-slate-950">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="space-y-1">
+      <div className="glass-panel rounded-2xl p-4 sm:p-5 border border-sky-500/30 shadow-xl relative overflow-hidden bg-gradient-to-r from-sky-950/30 via-slate-900/90 to-slate-950">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
+          <div className="space-y-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-sky-500/20 text-sky-300 border border-sky-500/40">
-                NUEVO · REGISTRO HÍBRIDO GOOGLE + MANUAL
+                FICHA DE COMPETIDOR
               </span>
             </div>
-            <h3 className="text-base sm:text-lg font-black text-white font-gaming">
+            <h3 className="text-base sm:text-lg font-black text-white font-gaming tracking-tight">
               {myLinkedPlayer
-                ? `¡YA ESTÁS INSCRITO COMO ${myLinkedPlayer.name.toUpperCase()} (${myLinkedPlayer.favoriteTeam.toUpperCase()})!`
-                : '¿VAS A JUGAR EL TORNEO? INSCRÍBETE CON TU CUENTA DE GOOGLE'}
+                ? `¡COMPITIENDO COMO ${myLinkedPlayer.name.toUpperCase()} (${myLinkedPlayer.favoriteTeam.toUpperCase()})!`
+                : 'ELIGE TU EQUIPO PARA EL TORNEO'}
             </h3>
-            <p className="text-xs text-slate-300 max-w-2xl">
+            <p className="text-xs text-slate-300 max-w-xl">
               {myLinkedPlayer
-                ? 'Tu perfil de Google está vinculado. Todas tus victorias, goles, vallas invictas y tu Carta Pro EA FC se guardarán automáticamente en tu historial.'
-                : 'Cada participante puede conectar su cuenta de Google para auto-inscribirse o reclamar su nombre si el administrador ya lo anotó manualmente.'}
+                ? 'Tu perfil está activo. Tus victorias, goles y estadísticas se sincronizarán directamente en tu Carta Pro FUT.'
+                : 'Ingresa tu apodo de juego y el club con el que vas a disputar los 120 partidos.'}
             </p>
           </div>
 
-          {/* Acción derecha según estado de sesión Google */}
+          {/* Acción derecha */}
           {!currentUser ? (
             <button
               type="button"
               onClick={onOpenGoogleModal}
-              className="px-5 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-black text-xs sm:text-sm font-gaming uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-lg transition shrink-0"
+              className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-black text-xs sm:text-sm font-gaming uppercase tracking-wider flex items-center justify-center gap-2.5 shadow-lg transition shrink-0"
             >
               <LogIn className="w-4 h-4 text-sky-600" />
-              <span>Conectar Google para Inscribirme</span>
+              <span>Conectar mi Cuenta</span>
             </button>
           ) : !myLinkedPlayer && !isFull ? (
             <form
               onSubmit={handleGoogleSelfRegister}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full xl:w-auto"
             >
               <input
                 type="text"
@@ -167,31 +167,31 @@ export function TournamentSetup({
                 placeholder="Tu Apodo"
                 value={googleNickname}
                 onChange={(e) => setGoogleNickname(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-fifa-neon sm:w-36"
+                className="w-full sm:w-32 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fifa-neon"
               />
               <input
                 type="text"
                 required
-                placeholder="Tu Equipo (ej. Arsenal)"
+                placeholder="Tu Equipo (ej. River Plate)"
                 value={googleTeam}
                 onChange={(e) => setGoogleTeam(e.target.value)}
-                className="px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white focus:outline-none focus:border-fifa-neon sm:w-48"
+                className="w-full sm:w-44 px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fifa-neon"
               />
               <button
                 type="submit"
-                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-fifa-emerald to-fifa-neon text-slate-950 font-black text-xs font-gaming uppercase tracking-wider shadow-neon-glow hover:brightness-110 transition shrink-0"
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-gradient-to-r from-fifa-emerald to-fifa-neon text-slate-950 font-black text-xs font-gaming uppercase tracking-wider shadow-neon-glow hover:brightness-110 transition whitespace-nowrap"
               >
-                + Inscribirme con Google
+                + Confirmar Cupo
               </button>
             </form>
           ) : (
             <button
               type="button"
               onClick={onOpenGoogleModal}
-              className="px-4 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center gap-2 transition shrink-0"
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/40 text-sky-300 font-bold text-xs flex items-center justify-center gap-2 transition shrink-0"
             >
               <CheckCircle2 className="w-4 h-4 text-fifa-neon" />
-              <span>Gestionar Mi Perfil Google</span>
+              <span>Mi Perfil de Jugador</span>
             </button>
           )}
         </div>
