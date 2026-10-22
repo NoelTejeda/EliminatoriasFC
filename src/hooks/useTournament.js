@@ -32,6 +32,7 @@ import {
   subscribeTournament,
   saveTournamentState,
   updateTournamentFields,
+  fetchTournamentOnce,
 } from '../firebase/tournamentService';
 
 const LS_KEY = 'fifa_ps4_local_fallback_v1';
@@ -176,23 +177,35 @@ export function useTournament(isAdmin = false, currentUser = null) {
       if (!canWrite) return;
 
       setIsSyncing(true);
-      const payload = {
-        players: newState.players ?? players,
-        matches: newState.matches ?? matches,
-        presentPlayerIds: newState.presentPlayerIds ?? presentPlayerIds,
-        isTournamentStarted: newState.isTournamentStarted ?? isTournamentStarted,
-        careerHistory: newState.careerHistory ?? careerHistory,
-        worldCup: newState.worldCup ?? worldCup,
-        whitelist: newState.whitelist ?? whitelist,
-        pendingRequests: newState.pendingRequests ?? pendingRequests,
-      };
+
+      // Si _fullSave es true, enviamos el estado completo consolidado
+      // Si _fullSave es false/undefined, enviamos ÚNICAMENTE los campos que cambiaron (Patch seguro)
+      // para evitar que usuarios concurrentes pisen campos de otros usuarios (ej. pendingRequests no toca players)
+      let payload;
+      if (newState._fullSave) {
+        payload = {
+          players: newState.players ?? players,
+          matches: newState.matches ?? matches,
+          presentPlayerIds: newState.presentPlayerIds ?? presentPlayerIds,
+          isTournamentStarted: newState.isTournamentStarted ?? isTournamentStarted,
+          careerHistory: newState.careerHistory ?? careerHistory,
+          worldCup: newState.worldCup ?? worldCup,
+          whitelist: newState.whitelist ?? whitelist,
+          pendingRequests: newState.pendingRequests ?? pendingRequests,
+        };
+        saveLocalFallback(payload);
+      } else {
+        payload = {};
+        for (const [key, val] of Object.entries(newState)) {
+          if (!key.startsWith('_') && val !== undefined) {
+            payload[key] = val;
+          }
+        }
+      }
 
       const writerRole = isAdmin
         ? 'admin'
         : currentUser?.email || currentUser?.uid || 'google_user';
-
-      // 1. Guardado optimista inmediato en localStorage (garantiza que NUNCA se pierda el resultado)
-      saveLocalFallback(payload);
 
       let success = false;
       try {
@@ -276,13 +289,24 @@ export function useTournament(isAdmin = false, currentUser = null) {
         return false;
       }
 
-      const alreadyByUid = players.some((p) => p.uid && p.uid === currentUser.uid);
+      // Consultar la versión más fresca de la nube para consolidar y evitar pisadas concurrentes
+      let freshPlayers = players;
+      try {
+        const freshData = await fetchTournamentOnce();
+        if (freshData?.players && Array.isArray(freshData.players)) {
+          freshPlayers = freshData.players;
+        }
+      } catch {
+        freshPlayers = players;
+      }
+
+      const alreadyByUid = freshPlayers.some((p) => p.uid && p.uid === currentUser.uid);
       if (alreadyByUid) {
         showToast('Tu cuenta de Google ya está inscrita en este torneo', 'error');
         return false;
       }
 
-      const isDuplicateName = players.some(
+      const isDuplicateName = freshPlayers.some(
         (p) => p.name.toLowerCase() === trimmedName.toLowerCase()
       );
       if (isDuplicateName) {
@@ -293,7 +317,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
         return false;
       }
 
-      const colorIndex = players.length % AVATAR_COLORS.length;
+      const colorIndex = freshPlayers.length % AVATAR_COLORS.length;
       const newGooglePlayer = {
         id: `p${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
         name: trimmedName,
@@ -322,7 +346,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
       updatedCareer[oldNameKey] = mergedRecord;
       updatedCareer[newUidKey] = mergedRecord;
 
-      const updatedPlayers = [...players, newGooglePlayer];
+      const updatedPlayers = [...freshPlayers, newGooglePlayer];
       setPlayers(updatedPlayers);
       setCareerHistory(updatedCareer);
       await persistState(
@@ -1405,7 +1429,18 @@ export function useTournament(isAdmin = false, currentUser = null) {
 
       // Si ya está autorizado, no hacer nada
       if (whitelist.some((e) => e.toLowerCase() === userEmail)) return;
-      if (pendingRequests.some((r) => r.email?.toLowerCase() === userEmail)) {
+
+      let freshPending = pendingRequests;
+      try {
+        const fresh = await fetchTournamentOnce();
+        if (fresh?.pendingRequests && Array.isArray(fresh.pendingRequests)) {
+          freshPending = fresh.pendingRequests;
+        }
+      } catch {
+        freshPending = pendingRequests;
+      }
+
+      if (freshPending.some((r) => r.email?.toLowerCase() === userEmail)) {
         return;
       }
 
@@ -1416,7 +1451,7 @@ export function useTournament(isAdmin = false, currentUser = null) {
         requestedAt: new Date().toISOString(),
       };
 
-      const updated = [newReq, ...pendingRequests.filter((r) => r.email?.toLowerCase() !== userEmail)];
+      const updated = [newReq, ...freshPending.filter((r) => r.email?.toLowerCase() !== userEmail)];
       setPendingRequests(updated);
       await persistState({ pendingRequests: updated }, { allowUserWrite: true });
     },
