@@ -1334,6 +1334,12 @@ export function useTournament(isAdmin = false, currentUser = null) {
     const byUid = players.find((p) => p.uid && p.uid === currentUser.uid);
     if (byUid) return byUid;
 
+    const userEmail = String(currentUser.email || '').trim().toLowerCase();
+    if (userEmail) {
+      const byEmail = players.find((p) => p.email && p.email.toLowerCase() === userEmail);
+      if (byEmail) return byEmail;
+    }
+
     const userDisplay = String(currentUser.displayName || '').trim().toLowerCase();
     const userFirstWord = userDisplay.split(/\s+/)[0] || '';
     const emailPrefix = String(currentUser.email || '')
@@ -1354,26 +1360,31 @@ export function useTournament(isAdmin = false, currentUser = null) {
     );
   }, [currentUser, players]);
 
-  // Si el usuario tiene sesión Google activa con foto y su jugador vinculado aún no tiene photoURL guardado, sincronizarlo
+  // Si el usuario tiene sesión Google activa y su jugador vinculado aún no tiene photoURL o UID guardado, sincronizarlo en Firestore
   useEffect(() => {
-    if (!currentUser?.photoURL || !myLinkedPlayer) return;
-    if (myLinkedPlayer.photoURL === currentUser.photoURL && myLinkedPlayer.uid === currentUser.uid) {
+    if (!currentUser || !myLinkedPlayer) return;
+    if (
+      myLinkedPlayer.uid === currentUser.uid &&
+      myLinkedPlayer.photoURL === currentUser.photoURL &&
+      myLinkedPlayer.authType === 'google'
+    ) {
       return;
     }
-    setPlayers((prev) =>
-      prev.map((p) =>
-        p.id === myLinkedPlayer.id
-          ? {
-              ...p,
-              authType: 'google',
-              uid: p.uid || currentUser.uid,
-              email: p.email || currentUser.email,
-              photoURL: currentUser.photoURL,
-            }
-          : p
-      )
+
+    const updated = players.map((p) =>
+      p.id === myLinkedPlayer.id
+        ? {
+            ...p,
+            authType: 'google',
+            uid: currentUser.uid,
+            email: currentUser.email || p.email,
+            photoURL: currentUser.photoURL || p.photoURL,
+          }
+        : p
     );
-  }, [currentUser, myLinkedPlayer]);
+    setPlayers(updated);
+    persistState({ players: updated }, { allowUserWrite: true });
+  }, [currentUser, myLinkedPlayer, players, persistState]);
 
   // ── AUTO-SELECCIÓN DE PARTIDO ACTIVO ──────────────────────
   useEffect(() => {
